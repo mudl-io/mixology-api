@@ -1,0 +1,170 @@
+[
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 1,
+    "fields": {
+      "name": "Simple Syrup",
+      "description": "Simple syrup (aka sugar syrup, or bar syrup) is a basic sugar-and-water syrup used by bartenders as a sweetener to make cocktails."
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 2,
+    "fields": {
+      "name": "Lemon Juice",
+      "description": "A class citrus ingredient needed in many cocktails. Pairs well with almost every liquor, and adds a nice tartness to a variety of cocktails."
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 3,
+    "fields": {
+      "name": "Lime Juice",
+      "description": "A cocktail staple. Needed in many well known drinks such as Moscow Mules, Gimlets, and Cosmos."
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 4,
+    "fields": {
+      "name": "Sweet Vermouth",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 5,
+    "fields": {
+      "name": "Dry Vermouth",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 6,
+    "fields": {
+      "name": "Club Soda",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 7,
+    "fields": {
+      "name": "Cola",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 8,
+    "fields": {
+      "name": "Tonic Water",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 9,
+    "fields": {
+      "name": "Ginger Beer",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 10,
+    "fields": {
+      "name": "Bitters",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 11,
+    "fields": {
+      "name": "Cranberry Juice",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 12,
+    "fields": {
+      "name": "Aperol",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 13,
+    "fields": {
+      "name": "Amaro",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 14,
+    "fields": {
+      "name": "Sugar",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 15,
+    "fields": {
+      "name": "Campari",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 16,
+    "fields": {
+      "name": "Triple Sec",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 17,
+    "fields": {
+      "name": "Cognac",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 18,
+    "fields": {
+      "name": "Blackberry Liquer",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 19,
+    "fields": {
+      "name": "Mint Leaves",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 20,
+    "fields": {
+      "name": "Lime Wedges",
+      "description": ""
+    }
+  },
+  {
+    "model": "ingredients.Ingredient",
+    "pk": 21,
+    "fields": {
+      "name": "Lemon Wedges",
+      "description": ""
+    }
+  }
+]

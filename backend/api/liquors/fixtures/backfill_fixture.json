@@ -1,0 +1,82 @@
+[
+  {
+    "model": "liquors.Liquor",
+    "pk": 1,
+    "fields": {
+      "name": "Whiskey",
+      "description": ""
+    }
+  },
+  {
+    "model": "liquors.Liquor",
+    "pk": 2,
+    "fields": {
+      "name": "Bourbon",
+      "description": ""
+    }
+  },
+  {
+    "model": "liquors.Liquor",
+    "pk": 3,
+    "fields": {
+      "name": "Scotch",
+      "description": ""
+    }
+  },
+  {
+    "model": "liquors.Liquor",
+    "pk": 4,
+    "fields": {
+      "name": "Gin",
+      "description": ""
+    }
+  },
+  {
+    "model": "liquors.Liquor",
+    "pk": 5,
+    "fields": {
+      "name": "Vodka",
+      "description": ""
+    }
+  },
+  {
+    "model": "liquors.Liquor",
+    "pk": 6,
+    "fields": {
+      "name": "Rum",
+      "description": ""
+    }
+  },
+  {
+    "model": "liquors.Liquor",
+    "pk": 7,
+    "fields": {
+      "name": "Tequila",
+      "description": ""
+    }
+  },
+  {
+    "model": "liquors.Liquor",
+    "pk": 8,
+    "fields": {
+      "name": "Wine",
+      "description": ""
+    }
+  },
+  {
+    "model": "liquors.Liquor",
+    "pk": 9,
+    "fields": {
+      "name": "Brandy",
+      "description": ""
+    }
+  },
+  {
+    "model": "liquors.Liquor",
+    "pk": 10,
+    "fields": {
+      "name": "Cointreau",
+      "description": ""
+    }
+  }
+]

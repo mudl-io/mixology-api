@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@material-ui/core";
 
 import "./styles.scss";
-import axiosInstance from "../../axiosApi";
 
 class PrimaryNavigationBar extends React.Component {
   constructor(props) {

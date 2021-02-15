@@ -1,5 +1,5 @@
 import React from "react";
-import { Router, Route, Switch } from "react-router-dom";
+import { Router, Route, Switch, Redirect } from "react-router-dom";
 
 import "./App.scss";
 import history from "../../history";
@@ -66,11 +66,13 @@ class App extends React.Component {
           />
           <Switch>
             <Route exact path="/" component={Homepage} />
-            <Route
-              exact
-              path="/login/"
-              render={() => <Login login={this.login} />}
-            />
+            <Route exact path="/login/">
+              {this.state.isLoggedIn ? (
+                <Redirect to="/" />
+              ) : (
+                <Login login={this.login} />
+              )}
+            </Route>
             <Route exact path="/signup/" component={Signup} />
           </Switch>
         </Router>

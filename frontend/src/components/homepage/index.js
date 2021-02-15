@@ -1,7 +1,8 @@
 import React from "react";
 import { Button } from "@material-ui/core";
+
 import "./styles.scss";
-import axios from "axios";
+import axiosInstance from "../../axiosApi";
 import CocktailDisplay from "../cocktail-display";
 
 class Homepage extends React.Component {
@@ -13,30 +14,37 @@ class Homepage extends React.Component {
       amtSaved: 0,
       complexity: 0,
       image: "",
+      error: "",
     };
   }
 
   getCocktail = async () => {
-    const res = await axios.get("cocktails/random_cocktail");
-    const cocktail = res.data;
+    try {
+      const res = await axiosInstance.get("/cocktails/random_cocktail");
+      const cocktail = res.data;
 
-    console.log(cocktail);
-
-    this.setState({
-      name: cocktail.name,
-      description: cocktail.description,
-      amtSaved: cocktail.amtSaved,
-      complexity: cocktail.complexity,
-      image: cocktail.image,
-      ingredients: cocktail.ingredients,
-      liquors: cocktail.liquors,
-      instructions: cocktail.instructions,
-    });
+      this.setState({
+        name: cocktail.name,
+        description: cocktail.description,
+        amtSaved: cocktail.amtSaved,
+        complexity: cocktail.complexity,
+        image: cocktail.image,
+        ingredients: cocktail.ingredients,
+        liquors: cocktail.liquors,
+        instructions: cocktail.instructions,
+        error: "",
+      });
+    } catch (e) {
+      this.setState({
+        error: "Error retrieving cocktails",
+      });
+    }
   };
 
-  render() {
-    return (
-      <div className="container">
+  showCocktailDetails = () => {
+    let content;
+    if (!this.state.error) {
+      content = (
         <CocktailDisplay
           name={this.state.name}
           description={this.state.description}
@@ -47,6 +55,17 @@ class Homepage extends React.Component {
           liquors={this.state.liquors}
           instructions={this.state.instructions}
         />
+      );
+    } else {
+      content = <div>{this.state.error}</div>;
+    }
+    return content;
+  };
+
+  render() {
+    return (
+      <div className="container">
+        {this.showCocktailDetails()}
         <Button
           variant="contained"
           className="cocktail-button"

@@ -17,7 +17,7 @@ class Homepage extends React.Component {
   }
 
   getCocktail = async () => {
-    const res = await axios.get("cocktails/random_cocktail");
+    const res = await axios.get("api/cocktails/random_cocktail");
     const cocktail = res.data;
 
     console.log(cocktail);

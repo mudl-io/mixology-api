@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 """
 Django settings for api project.
@@ -45,7 +46,8 @@ INSTALLED_APPS = [
     'taggit',
     'cocktails',
     'ingredients',
-    'liquors'
+    'liquors',
+    'custom_user',
 ]
 
 MIDDLEWARE = [
@@ -91,12 +93,14 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'mixology',
         'USER': os.environ['POSTGRESQL_USER'],
-        'PASSWORD': '',
+        'PASSWORD': os.environ['POSTGRESQL_PW'],
         'HOST': 'localhost',
         'PORT': '5432'
     }
 }
 
+# Custom user model
+AUTH_USER_MODEL = "custom_user.CustomUser"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -159,7 +163,6 @@ STATICFILES_DIRS = [
 # AWS_DEFAULT_ACL = None
 
 REST_FRAMEWORK = {
-
     'DEFAULT_RENDERER_CLASSES': (
         'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
         'djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer',
@@ -171,4 +174,25 @@ REST_FRAMEWORK = {
         'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
         'djangorestframework_camel_case.parser.CamelCaseJSONParser',
     ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ), 
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('JWT',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
 }

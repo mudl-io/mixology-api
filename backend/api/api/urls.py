@@ -25,5 +25,6 @@ router.register(r'^api/cocktails', CocktailsViewSet, basename='cocktail')
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    path('admin/', admin.site.urls)
+    path('admin/', admin.site.urls),
+    path('api/', include('custom_user.urls'))
 ]

@@ -1,7 +1,11 @@
 import React from "react";
+import { connect } from "react-redux";
 
 import axiosInstance from "../../axiosApi";
 import "./styles.scss";
+
+// redux actions
+import { loginUser } from "../../features/users/usersSlice";
 
 class Signup extends React.Component {
   constructor(props) {
@@ -28,6 +32,7 @@ class Signup extends React.Component {
         email: this.state.email,
         password: this.state.password,
       });
+      this.props.dispatch(loginUser(response.data));
       return response;
     } catch (error) {
       console.log(error.stack);
@@ -77,4 +82,4 @@ class Signup extends React.Component {
   }
 }
 
-export default Signup;
+export default connect()(Signup);

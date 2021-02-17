@@ -1,23 +1,46 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@material-ui/core";
+import { connect } from "react-redux";
 
 import "./styles.scss";
+import axiosInstance from "../../axiosApi";
+
+// redux actions
+import { logoutUser } from "../../features/users/usersSlice";
 
 class PrimaryNavigationBar extends React.Component {
   constructor(props) {
     super(props);
   }
 
+  logout = async () => {
+    let response;
+    try {
+      response = await axiosInstance.post("/blacklist/", {
+        refresh_token: localStorage.getItem("refresh_token"),
+      });
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      axiosInstance.defaults.headers["Authorization"] = null;
+
+      this.props.dispatch(logoutUser());
+    } catch (e) {
+      console.log(e);
+    } finally {
+      return response;
+    }
+  };
+
   rightNavContent = () => {
     let content;
 
-    if (this.props.isLoggedIn) {
+    if (this.props.user) {
       content = (
         <Button
           variant="contained"
           className="logout-button"
-          onClick={this.props.logout}
+          onClick={this.logout}
         >
           Logout
         </Button>
@@ -52,4 +75,4 @@ class PrimaryNavigationBar extends React.Component {
     );
   }
 }
-export default PrimaryNavigationBar;
+export default connect()(PrimaryNavigationBar);

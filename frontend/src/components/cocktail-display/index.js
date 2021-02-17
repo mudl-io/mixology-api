@@ -22,7 +22,9 @@ class CocktailDisplay extends React.Component {
       return (
         <ul className="ingredients-list">
           {ingredients.map((ingredient) => (
-            <li>{ingredient.name}</li>
+            <li key={`${ingredient.pk}-${ingredient.name}`}>
+              {ingredient.name}
+            </li>
           ))}
         </ul>
       );

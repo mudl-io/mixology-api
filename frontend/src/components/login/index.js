@@ -1,6 +1,11 @@
 import React from "react";
+import { connect } from "react-redux";
 
 import "./styles.scss";
+import axiosInstance from "../../axiosApi";
+
+// redux actions
+import { loginUser } from "../../features/users/usersSlice";
 
 class Login extends React.Component {
   constructor(props) {
@@ -17,7 +22,30 @@ class Login extends React.Component {
 
   async handleSubmit(event) {
     event.preventDefault();
-    this.props.login(this.state.username, this.state.password);
+
+    let response;
+    try {
+      response = await axiosInstance.post("/token/obtain/", {
+        username: this.state.username,
+        password: this.state.password,
+      });
+
+      axiosInstance.defaults.headers["Authorization"] =
+        "JWT " + response.data.access;
+      localStorage.setItem("access_token", response.data.access);
+      localStorage.setItem("refresh_token", response.data.refresh);
+
+      // update store with user here
+      const payload = {
+        id: response.data.id,
+        username: response.data.user,
+        email: response.data.email,
+      };
+      this.props.dispatch(loginUser(payload));
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 
   render() {
@@ -53,4 +81,4 @@ class Login extends React.Component {
     );
   }
 }
-export default Login;
+export default connect()(Login);

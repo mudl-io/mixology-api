@@ -2,7 +2,7 @@ import React from "react";
 
 import "./styles.scss";
 
-class CocktailDisplay extends React.Component {
+class CocktailDisplay extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {

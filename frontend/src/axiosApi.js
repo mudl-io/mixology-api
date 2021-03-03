@@ -15,6 +15,18 @@ axiosInstance.interceptors.response.use(
   (error) => {
     const originalRequest = error.config;
 
+    // Prevent infinite loops
+    if (
+      error.response.status === 401 &&
+      originalRequest.url === "/token/refresh/"
+    ) {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refesh_token");
+      localStorage.removeItem("user");
+      window.location.href = "/login/";
+      return Promise.reject(error);
+    }
+
     if (
       error.response.status === 401 &&
       error.response.statusText === "Unauthorized"

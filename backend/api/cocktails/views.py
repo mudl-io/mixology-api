@@ -13,6 +13,9 @@ class CocktailsViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
     authentication_classes = ()
 
+    def perform_create(self, serializer):
+        serializer.save()
+
     @action(detail=False)
     def random_cocktail(self, request):
         cocktails = Cocktail.objects.all()
@@ -23,5 +26,3 @@ class CocktailsViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
         return Response(status=status.HTTP_404_NOT_FOUND)
-       
-

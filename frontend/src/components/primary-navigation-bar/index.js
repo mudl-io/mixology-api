@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
+import { Dropdown, DropdownButton } from "react-bootstrap";
 
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";
@@ -32,18 +33,38 @@ class PrimaryNavigationBar extends React.Component {
     }
   };
 
+  leftNavContent = () => {
+    let content;
+
+    if (this.props.user) {
+      content = (
+        <span className="cocktail-options-buttons">
+          <Link className="nav-link" to="/create-cocktail/">
+            Create a Cocktail
+          </Link>
+        </span>
+      );
+    }
+
+    return content;
+  };
+
   rightNavContent = () => {
     let content;
 
     if (this.props.user) {
       content = (
-        <Button
-          variant="contained"
-          className="logout-button"
-          onClick={this.logout}
+        <DropdownButton
+          className="user-options-dropdown"
+          variant="Secondary"
+          title={this.props.user.username}
         >
-          Logout
-        </Button>
+          <Dropdown.Item>Profile</Dropdown.Item>
+          <Dropdown.Item>Saved Cocktails</Dropdown.Item>
+          <Dropdown.Item>Created Cocktails</Dropdown.Item>
+          <Dropdown.Divider />
+          <Dropdown.Item onClick={this.logout}>Logout</Dropdown.Item>
+        </DropdownButton>
       );
     } else {
       content = (
@@ -69,6 +90,7 @@ class PrimaryNavigationBar extends React.Component {
             <img className="site-logo-nav" src="/defaultimg.png" />
             <span>Mixed In</span>
           </Link>
+          {this.leftNavContent()}
           {this.rightNavContent()}
         </nav>
       </div>

@@ -5,4 +5,7 @@ class LiquorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Liquor 
-        fields = ('pk', 'name', 'description')
+        fields = ('public_id', 'name', 'description')
+        extra_kwargs = {
+            'public_id': {'validators': []},
+        }

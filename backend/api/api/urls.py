@@ -19,9 +19,13 @@ from django.conf.urls import url, include
 from rest_framework.routers import DefaultRouter
 
 from cocktails.views import CocktailsViewSet
+from ingredients.views import IngredientsViewSet
+from liquors.views import LiquorsViewSet
 
 router = DefaultRouter()
 router.register(r'^api/cocktails', CocktailsViewSet, basename='cocktail')
+router.register(r'^api/ingredients', IngredientsViewSet, basename='ingredient')
+router.register(r'^api/liquors', LiquorsViewSet, basename='liquor')
 
 urlpatterns = [
     url(r'^', include(router.urls)),

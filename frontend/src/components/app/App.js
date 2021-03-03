@@ -9,6 +9,7 @@ import Homepage from "../homepage";
 import Login from "../login";
 import Signup from "../signup";
 import PrimaryNavigationBar from "../primary-navigation-bar";
+import CreateCocktailForm from "../create-cocktail-form";
 
 class App extends React.Component {
   constructor(props) {
@@ -28,6 +29,11 @@ class App extends React.Component {
             <Route exact path="/signup/">
               {this.props.user ? <Redirect to="/" /> : <Signup />}
             </Route>
+            <Route
+              exact
+              path="/create-cocktail/"
+              component={CreateCocktailForm}
+            />
           </Switch>
         </Router>
       </div>

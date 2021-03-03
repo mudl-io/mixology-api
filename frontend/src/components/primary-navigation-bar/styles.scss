@@ -18,11 +18,21 @@
 
       &.homepage {
         display: flex;
+        width: 110px;
       }
     }
 
     .site-logo-nav {
       height: 64%;
+    }
+
+    .cocktail-options-buttons {
+      display: flex;
+    }
+
+    .user-options-dropdown {
+      position: absolute;
+      right: 0;
     }
 
     .login-signup-buttons {

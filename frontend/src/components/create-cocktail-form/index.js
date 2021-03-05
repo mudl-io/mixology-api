@@ -3,7 +3,12 @@ import React from "react";
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";
 import Select from "react-select";
-import { Button } from "bootstrap";
+import {
+  NotificationContainer,
+  NotificationManager,
+} from "react-notifications";
+import { FiHelpCircle } from "react-icons/fi";
+import Tooltip from "@material-ui/core/Tooltip";
 
 class CreateCocktailForm extends React.Component {
   constructor(props) {
@@ -17,6 +22,11 @@ class CreateCocktailForm extends React.Component {
       instructions: "",
       selectedIngredients: [],
       selectedLiquors: [],
+      cocktailNameValid: true,
+      selectedLiquorsClass: {},
+      selectedIngredientsClass: {},
+      instructionsValid: true,
+      complexityIsValid: true,
     };
   }
 
@@ -37,13 +47,23 @@ class CreateCocktailForm extends React.Component {
   }
 
   handleChange = (event) => {
-    this.setState({ [event.target.name]: event.target.value });
+    const isEmpty = event.target.value.trim().length === 0;
+    const key = event.target.name + "Valid";
+    this.setState({ [event.target.name]: event.target.value, [key]: !isEmpty });
   };
 
   handleSelect = (name) => (selectedOptions) => {
     const values = selectedOptions.map((option) => option.value);
+    const key = name + "Class";
+    const styles = {
+      control: (provided) => ({
+        ...provided,
+        borderWidth: values.length > 0 ? "" : "2px",
+        borderColor: values.length > 0 ? "" : "red",
+      }),
+    };
 
-    this.setState({ [name]: values });
+    this.setState({ [name]: values, [key]: styles });
   };
 
   handleSelectComplexity = (selectedComplexity) => {
@@ -53,20 +73,30 @@ class CreateCocktailForm extends React.Component {
   handleSubmit = async (event) => {
     event.preventDefault();
 
-    let response;
-    try {
-      response = await axiosInstance.post("/cocktails/", {
-        name: this.state.cocktailName,
-        description: this.state.description,
-        complexity: this.state.complexity,
-        instructions: this.state.instructions,
-        liquors: this.state.selectedLiquors,
-        ingredients: this.state.selectedIngredients,
-      });
-    } catch (error) {
-      throw error;
-    } finally {
-      return response;
+    const isValid = this.isFormValid();
+
+    if (isValid) {
+      let response;
+      try {
+        response = await axiosInstance.post("/cocktails/", {
+          name: this.state.cocktailName,
+          description: this.state.description,
+          complexity: this.state.complexity,
+          instructions: this.state.instructions,
+          liquors: this.state.selectedLiquors,
+          ingredients: this.state.selectedIngredients,
+        });
+      } catch (error) {
+        throw error;
+      } finally {
+        return response;
+      }
+    } else {
+      NotificationManager.error(
+        "Please fill out all required inputs in order to create your cocktail",
+        "Invalid Input",
+        5000
+      );
     }
   };
 
@@ -91,23 +121,33 @@ class CreateCocktailForm extends React.Component {
     });
   };
 
+  isFormValid = () => {
+    return (
+      this.state.cocktailName.trim().length === 0 &&
+      this.state.selectedIngredients.length > 0 &&
+      this.state.selectedLiquors.length > 0 &&
+      this.state.complexity > 0
+    );
+  };
+
   render() {
     return (
       <div className="create-cocktail-container">
         <form className="create-cocktail-form" onSubmit={this.handleSubmit}>
           <label className="cocktail-name-input">
-            <div className="input-name">Name:</div>
+            <div className="input-name">Name*:</div>
             <input
               name="cocktailName"
+              className={this.state.cocktailNameValid ? "" : "invalid"}
               type="text"
               value={this.state.cocktailName}
               onChange={this.handleChange}
             />
           </label>
           <label className="dropdown-select">
-            <div className="input-name">Liquors:</div>
+            <div className="input-name">Liquors*:</div>
             <Select
-              className="select-dropdown liquors-select"
+              styles={this.state.selectedLiquorsClass}
               name="Liquors"
               options={this.buildOptions("liquorOptions")}
               isMulti
@@ -115,9 +155,9 @@ class CreateCocktailForm extends React.Component {
             />
           </label>
           <label className="dropdown-select">
-            <div className="input-name">Ingredients:</div>
+            <div className="input-name">Ingredients*:</div>
             <Select
-              className="select-dropdown ingredients-select"
+              styles={this.state.selectedIngredientsClass}
               name="Ingredients"
               options={this.buildOptions("ingredientOptions")}
               isMulti
@@ -125,9 +165,10 @@ class CreateCocktailForm extends React.Component {
             />
           </label>
           <label className="input-text-area">
-            <div className="input-name">Instructions:</div>
+            <div className="input-name">Instructions*:</div>
             <textarea
               name="instructions"
+              className={this.state.instructionsValid ? "" : "invalid"}
               type="textarea"
               value={this.state.instructions}
               onChange={this.handleChange}
@@ -143,13 +184,21 @@ class CreateCocktailForm extends React.Component {
             />
           </label>
           <label className="dropdown-select">
-            <div className="input-name">Complexity:</div>
+            <div className="input-name">Complexity*:</div>
             <Select
               className="select-dropdown complexity-select"
               name="Complexity"
               options={this.complexityOptions()}
               onChange={this.handleSelectComplexity}
             />
+            <Tooltip
+              title="A measure of how hard this drink is to make!"
+              placement="top"
+            >
+              <span className="help-icon">
+                <FiHelpCircle />
+              </span>
+            </Tooltip>
           </label>
           <input
             className="create-cocktail-submit-button"
@@ -157,6 +206,8 @@ class CreateCocktailForm extends React.Component {
             value="Create Cocktail"
           />
         </form>
+
+        <NotificationContainer />
       </div>
     );
   }

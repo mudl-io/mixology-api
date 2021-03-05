@@ -29,6 +29,7 @@ class CreateCocktailForm extends React.Component {
       complexityClass: {},
       instructionsValid: true,
       submittedForm: false,
+      errorMessageActive: false,
     };
   }
 
@@ -105,7 +106,7 @@ class CreateCocktailForm extends React.Component {
         NotificationManager.success(
           'Your cocktail was successfully created! You can now view this in the "Created Cocktails" section in your profile.',
           "Cocktail Submitted",
-          5000
+          1500
         );
         setTimeout(() => {
           this.setState({ submittedForm: true });
@@ -114,11 +115,19 @@ class CreateCocktailForm extends React.Component {
         return response;
       }
     } else {
-      NotificationManager.error(
-        "Please fill out all required inputs in order to create your cocktail",
-        "Invalid Input",
-        5000
-      );
+      if (!this.state.errorMessageActive) {
+        this.setState({ errorMessageActive: true });
+        NotificationManager.error(
+          "Please fill out all required inputs in order to create your cocktail",
+          "Invalid Input",
+          2000,
+          () => this.setState({ errorMessageActive: false })
+        );
+
+        setTimeout(() => {
+          this.setState({ errorMessageActive: false });
+        }, 2000);
+      }
     }
   };
 

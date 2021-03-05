@@ -106,7 +106,7 @@ class CreateCocktailForm extends React.Component {
         NotificationManager.success(
           'Your cocktail was successfully created! You can now view this in the "Created Cocktails" section in your profile.',
           "Cocktail Submitted",
-          1500
+          2000
         );
         setTimeout(() => {
           this.setState({ submittedForm: true });

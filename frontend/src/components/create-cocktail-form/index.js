@@ -1,7 +1,5 @@
 import React from "react";
-
-import "./styles.scss";
-import axiosInstance from "../../axiosApi";
+import { Redirect } from "react-router-dom";
 import Select from "react-select";
 import {
   NotificationContainer,
@@ -9,6 +7,9 @@ import {
 } from "react-notifications";
 import { FiHelpCircle } from "react-icons/fi";
 import Tooltip from "@material-ui/core/Tooltip";
+
+import "./styles.scss";
+import axiosInstance from "../../axiosApi";
 
 class CreateCocktailForm extends React.Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class CreateCocktailForm extends React.Component {
       selectedIngredientsClass: {},
       instructionsValid: true,
       complexityIsValid: true,
+      submittedForm: false,
     };
   }
 
@@ -89,6 +91,7 @@ class CreateCocktailForm extends React.Component {
       } catch (error) {
         throw error;
       } finally {
+        this.setState({ submittedForm: true });
         return response;
       }
     } else {
@@ -123,11 +126,17 @@ class CreateCocktailForm extends React.Component {
 
   isFormValid = () => {
     return (
-      this.state.cocktailName.trim().length === 0 &&
+      this.state.cocktailName.trim().length > 0 &&
       this.state.selectedIngredients.length > 0 &&
       this.state.selectedLiquors.length > 0 &&
       this.state.complexity > 0
     );
+  };
+
+  shouldRedirect = () => {
+    if (this.state.submittedForm) {
+      return <Redirect to={{ pathname: "/" }} />;
+    }
   };
 
   render() {
@@ -206,6 +215,8 @@ class CreateCocktailForm extends React.Component {
             value="Create Cocktail"
           />
         </form>
+
+        {this.shouldRedirect()}
 
         <NotificationContainer />
       </div>

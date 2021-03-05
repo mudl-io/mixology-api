@@ -26,8 +26,8 @@ class CreateCocktailForm extends React.Component {
       cocktailNameValid: true,
       selectedLiquorsClass: {},
       selectedIngredientsClass: {},
+      complexityClass: {},
       instructionsValid: true,
-      complexityIsValid: true,
       submittedForm: false,
     };
   }
@@ -69,13 +69,24 @@ class CreateCocktailForm extends React.Component {
   };
 
   handleSelectComplexity = (selectedComplexity) => {
-    this.setState({ complexity: selectedComplexity.value });
+    const isValidStyles = {
+      control: (provided) => ({
+        ...provided,
+        borderWidth: "",
+        borderColor: "",
+      }),
+    };
+
+    this.setState({
+      complexity: selectedComplexity.value,
+      complexityClass: isValidStyles,
+    });
   };
 
   handleSubmit = async (event) => {
     event.preventDefault();
 
-    const isValid = this.isFormValid();
+    const isValid = this.validateForm();
 
     if (isValid) {
       let response;
@@ -91,7 +102,15 @@ class CreateCocktailForm extends React.Component {
       } catch (error) {
         throw error;
       } finally {
-        this.setState({ submittedForm: true });
+        NotificationManager.success(
+          'Your cocktail was successfully created! You can now view this in the "Created Cocktails" section in your profile.',
+          "Cocktail Submitted",
+          5000
+        );
+        setTimeout(() => {
+          this.setState({ submittedForm: true });
+        }, 2000);
+
         return response;
       }
     } else {
@@ -124,13 +143,54 @@ class CreateCocktailForm extends React.Component {
     });
   };
 
-  isFormValid = () => {
-    return (
-      this.state.cocktailName.trim().length > 0 &&
-      this.state.selectedIngredients.length > 0 &&
-      this.state.selectedLiquors.length > 0 &&
-      this.state.complexity > 0
-    );
+  validateForm = () => {
+    const cocktailNameValid = this.state.cocktailName.trim().length > 0;
+    const selectedIngredientsValid = this.state.selectedIngredients.length > 0;
+    const selectedLiquorsValid = this.state.selectedLiquors.length > 0;
+    const instructionsValid = this.state.instructions.trim().length > 0;
+    const complexityIsValid = this.state.complexity > 0;
+    const formIsValid =
+      cocktailNameValid &&
+      selectedIngredientsValid &&
+      selectedLiquorsValid &&
+      complexityIsValid &&
+      instructionsValid;
+
+    if (!formIsValid) {
+      const ingredientsStyles = {
+        control: (provided) => ({
+          ...provided,
+          borderWidth: this.state.selectedIngredients.length > 0 ? "" : "2px",
+          borderColor: this.state.selectedIngredients.length > 0 ? "" : "red",
+        }),
+      };
+
+      const liquorsStyles = {
+        control: (provided) => ({
+          ...provided,
+          borderWidth: this.state.selectedLiquors.length > 0 ? "" : "2px",
+          borderColor: this.state.selectedLiquors.length > 0 ? "" : "red",
+        }),
+      };
+
+      const complexityStyles = {
+        control: (provided) => ({
+          ...provided,
+          borderWidth: this.state.complexity > 0 ? "" : "2px",
+          borderColor: this.state.complexity > 0 ? "" : "red",
+        }),
+      };
+
+      this.setState({
+        cocktailNameValid,
+        instructionsValid,
+        selectedIngredientsClass: ingredientsStyles,
+        selectedLiquorsClass: liquorsStyles,
+        complexityClass: complexityStyles,
+      });
+    }
+
+    return formIsValid;
   };
 
   shouldRedirect = () => {
@@ -195,7 +255,7 @@ class CreateCocktailForm extends React.Component {
           <label className="dropdown-select">
             <div className="input-name">Complexity*:</div>
             <Select
-              className="select-dropdown complexity-select"
+              styles={this.state.complexityClass}
               name="Complexity"
               options={this.complexityOptions()}
               onChange={this.handleSelectComplexity}

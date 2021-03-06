@@ -1,5 +1,10 @@
 import React from "react";
 import { Button } from "@material-ui/core";
+import { connect } from "react-redux";
+
+// redux actions
+import { didGetIngredients } from "../../features/ingredients/ingredientsSlice";
+import { didGetLiquors } from "../../features/liquors/liquorsSlice";
 
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";
@@ -16,6 +21,26 @@ class Homepage extends React.Component {
       image: "",
       error: "",
     };
+  }
+
+  async componentDidMount() {
+    // only make network request to get liquors and ingredients if the store is not already filled
+    try {
+      if (
+        this.props.ingredientOptions.length === 0 &&
+        this.props.liquorOptions.length === 0
+      ) {
+        const [ingredients, liquors] = await Promise.all([
+          axiosInstance.get("/ingredients/"),
+          axiosInstance.get("/liquors/"),
+        ]);
+
+        this.props.dispatch(didGetIngredients(ingredients.data));
+        this.props.dispatch(didGetLiquors(liquors.data));
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   getCocktail = async () => {
@@ -78,4 +103,9 @@ class Homepage extends React.Component {
   }
 }
 
-export default Homepage;
+const mapStateToProps = (state) => {
+  const { liquors, ingredients } = state;
+  return { liquorOptions: liquors, ingredientOptions: ingredients };
+};
+
+export default connect(mapStateToProps)(Homepage);

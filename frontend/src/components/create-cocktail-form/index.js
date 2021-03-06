@@ -8,6 +8,11 @@ import {
 import { FiHelpCircle } from "react-icons/fi";
 import Tooltip from "@material-ui/core/Tooltip";
 import Checkbox from "@material-ui/core/Checkbox";
+import { connect } from "react-redux";
+
+// redux actions
+import { didGetIngredients } from "../../features/ingredients/ingredientsSlice";
+import { didGetLiquors } from "../../features/liquors/liquorsSlice";
 
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";
@@ -19,8 +24,6 @@ class CreateCocktailForm extends React.Component {
       cocktailName: "",
       description: "",
       complexity: 0,
-      ingredientOptions: "",
-      liquorOptions: "",
       instructions: "",
       selectedIngredients: [],
       selectedLiquors: [],
@@ -36,16 +39,20 @@ class CreateCocktailForm extends React.Component {
   }
 
   async componentDidMount() {
+    // only make network request to get liquors and ingredients if the store is not already filled
     try {
-      const [ingredients, liquors] = await Promise.all([
-        axiosInstance.get("/ingredients/"),
-        axiosInstance.get("/liquors/"),
-      ]);
+      if (
+        this.props.ingredientOptions.length === 0 &&
+        this.props.liquorOptions.length === 0
+      ) {
+        const [ingredients, liquors] = await Promise.all([
+          axiosInstance.get("/ingredients/"),
+          axiosInstance.get("/liquors/"),
+        ]);
 
-      this.setState({
-        ingredientOptions: ingredients.data,
-        liquorOptions: liquors.data,
-      });
+        this.props.dispatch(didGetIngredients(ingredients.data));
+        this.props.dispatch(didGetLiquors(liquors.data));
+      }
     } catch (e) {
       console.log(e);
     }
@@ -139,8 +146,8 @@ class CreateCocktailForm extends React.Component {
   };
 
   buildOptions = (optionName) => {
-    if (this.state[optionName].length > 0) {
-      return this.state[optionName].map((option) => {
+    if (this.props[optionName].length > 0) {
+      return this.props[optionName].map((option) => {
         return {
           value: option,
           label: option.name,
@@ -306,4 +313,10 @@ class CreateCocktailForm extends React.Component {
     );
   }
 }
-export default CreateCocktailForm;
+
+const mapStateToProps = (state) => {
+  const { liquors, ingredients } = state;
+  return { liquorOptions: liquors, ingredientOptions: ingredients };
+};
+
+export default connect(mapStateToProps)(CreateCocktailForm);

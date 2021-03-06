@@ -16,6 +16,7 @@ import { didGetLiquors } from "../../features/liquors/liquorsSlice";
 
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";
+import HelpIcon from "../help-icon";
 
 class CreateCocktailForm extends React.Component {
   constructor(props) {
@@ -283,14 +284,10 @@ class CreateCocktailForm extends React.Component {
               options={this.complexityOptions()}
               onChange={this.handleSelectComplexity}
             />
-            <Tooltip
+            <HelpIcon
               title="A measure of how hard this drink is to make!"
               placement="top"
-            >
-              <span className="help-icon">
-                <FiHelpCircle />
-              </span>
-            </Tooltip>
+            />
           </label>
           <div className="private-cocktail-checkbox">
             <Checkbox

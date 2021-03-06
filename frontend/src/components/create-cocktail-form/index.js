@@ -5,8 +5,6 @@ import {
   NotificationContainer,
   NotificationManager,
 } from "react-notifications";
-import { FiHelpCircle } from "react-icons/fi";
-import Tooltip from "@material-ui/core/Tooltip";
 import Checkbox from "@material-ui/core/Checkbox";
 import { connect } from "react-redux";
 

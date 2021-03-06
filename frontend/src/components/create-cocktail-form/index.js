@@ -7,6 +7,7 @@ import {
 } from "react-notifications";
 import { FiHelpCircle } from "react-icons/fi";
 import Tooltip from "@material-ui/core/Tooltip";
+import Checkbox from "@material-ui/core/Checkbox";
 
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";
@@ -23,6 +24,7 @@ class CreateCocktailForm extends React.Component {
       instructions: "",
       selectedIngredients: [],
       selectedLiquors: [],
+      isPrivate: false,
       cocktailNameValid: true,
       selectedLiquorsClass: {},
       selectedIngredientsClass: {},
@@ -84,6 +86,10 @@ class CreateCocktailForm extends React.Component {
     });
   };
 
+  toggleIsPrivate = () => {
+    this.setState({ isPrivate: !this.state.isPrivate });
+  };
+
   handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -99,6 +105,7 @@ class CreateCocktailForm extends React.Component {
           instructions: this.state.instructions,
           liquors: this.state.selectedLiquors,
           ingredients: this.state.selectedIngredients,
+          isPrivate: this.state.isPrivate,
         });
       } catch (error) {
         throw error;
@@ -261,7 +268,7 @@ class CreateCocktailForm extends React.Component {
               onChange={this.handleChange}
             />
           </label>
-          <label className="dropdown-select">
+          <label className="dropdown-select complexity">
             <div className="input-name">Complexity*:</div>
             <Select
               styles={this.state.complexityClass}
@@ -278,6 +285,13 @@ class CreateCocktailForm extends React.Component {
               </span>
             </Tooltip>
           </label>
+          <div className="private-cocktail-checkbox">
+            <Checkbox
+              checked={this.state.isPrivate}
+              onChange={this.toggleIsPrivate}
+            />
+            <span className="checkbox-text">Make private</span>
+          </div>
           <input
             className="create-cocktail-submit-button"
             type="submit"

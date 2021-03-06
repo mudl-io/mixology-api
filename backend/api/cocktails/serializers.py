@@ -22,7 +22,8 @@ class CocktailSerializer(serializers.ModelSerializer):
             'ingredients',
             'liquors',
             'instructions',
-            'created_by'
+            'created_by',
+            'is_private',
         )
 
     # only called when running "serializer.save() in view"

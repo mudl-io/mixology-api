@@ -22,7 +22,7 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
     @action(detail=False)
     def random_cocktail(self, request):
-        cocktails = Cocktail.objects.all()
+        cocktails = Cocktail.objects.filter(is_private=False)
         random_cocktail = random.choice(cocktails)
         serializer = CocktailSerializer(random_cocktail, context={'request': request}, many=False)
 

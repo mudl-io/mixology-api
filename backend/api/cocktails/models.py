@@ -25,6 +25,7 @@ class Cocktail(models.Model):
     liquors = models.ManyToManyField(Liquor)
     created_by = models.ForeignKey(CustomUser, default=None, on_delete=models.SET_NULL, null=True, related_name='cocktail_created_by')
     saved_by = models.ManyToManyField(CustomUser, default=None, related_name='cocktail_saved_by')
+    is_private = models.BooleanField(default=False)
 
     # TODO
     # Use the react-tag-input npm module to generate tags associated with different cocktails

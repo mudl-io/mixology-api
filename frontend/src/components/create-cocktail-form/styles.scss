@@ -31,6 +31,16 @@
       width: 100%;
       margin-top: 30px;
       margin-bottom: 30px;
+
+      &.complexity {
+        margin-bottom: 15px;
+      }
+    }
+
+    .private-cocktail-checkbox {
+      width: 150px;
+      position: relative;
+      left: -18px;
     }
 
     .create-cocktail-submit-button {

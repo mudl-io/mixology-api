@@ -1,6 +1,11 @@
 import React from "react";
 import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
+import Checkbox from "@material-ui/core/Checkbox";
+import {
+  NotificationContainer,
+  NotificationManager,
+} from "react-notifications";
 
 // redux actions
 import { didGetIngredients } from "../../features/ingredients/ingredientsSlice";
@@ -23,6 +28,7 @@ class Homepage extends React.Component {
       error: "",
       selectedIngredients: [],
       selectedLiquors: [],
+      shouldBeExact: false,
     };
   }
 
@@ -48,20 +54,37 @@ class Homepage extends React.Component {
 
   getCocktail = async () => {
     try {
-      const res = await axiosInstance.get("/cocktails/random_cocktail");
-      const cocktail = res.data;
-
-      this.setState({
-        name: cocktail.name,
-        description: cocktail.description,
-        amtSaved: cocktail.amtSaved,
-        complexity: cocktail.complexity,
-        image: cocktail.image,
-        ingredients: cocktail.ingredients,
-        liquors: cocktail.liquors,
-        instructions: cocktail.instructions,
-        error: "",
+      const res = await axiosInstance.get("/cocktails/random_cocktail", {
+        params: {
+          liquors_filter: JSON.stringify(
+            this.state.selectedLiquors.map((liquor) => liquor.publicId)
+          ),
+          ingredients_filter: JSON.stringify(
+            this.state.selectedIngredients.map(
+              (ingredient) => ingredient.publicId
+            )
+          ),
+          find_exact_match: this.state.shouldBeExact,
+        },
       });
+
+      if (res.status === 204) {
+        this.setState({ noMatchFound: true });
+      } else {
+        const cocktail = res.data;
+
+        this.setState({
+          name: cocktail.name,
+          description: cocktail.description,
+          amtSaved: cocktail.amtSaved,
+          complexity: cocktail.complexity,
+          image: cocktail.image,
+          ingredients: cocktail.ingredients,
+          liquors: cocktail.liquors,
+          instructions: cocktail.instructions,
+          error: "",
+        });
+      }
     } catch (e) {
       this.setState({
         error: "Error retrieving cocktails",
@@ -71,7 +94,7 @@ class Homepage extends React.Component {
 
   showCocktailDetails = () => {
     let content;
-    if (!this.state.error) {
+    if (!this.state.error && !this.state.noMatchFound) {
       content = (
         <CocktailDisplay
           name={this.state.name}
@@ -84,6 +107,14 @@ class Homepage extends React.Component {
           instructions={this.state.instructions}
         />
       );
+    } else if (this.state.noMatchFound) {
+      NotificationManager.warning(
+        "Unfortunately, we were unable to find an exact match for you based on your filters. Try adjusting your filters or checking off the exact match button.",
+        "No Cocktail Found",
+        5000
+      );
+
+      this.setState({ noMatchFound: !this.state.noMatchFound });
     } else {
       content = <div>{this.state.error}</div>;
     }
@@ -93,7 +124,11 @@ class Homepage extends React.Component {
   handleSelect = (optionName) => (selectedOptions) => {
     const values = selectedOptions.map((option) => option.value);
 
-    this.setState({ [optionName]: values }, () => console.log(this.state));
+    this.setState({ [optionName]: values });
+  };
+
+  toggleExactMatch = () => {
+    this.setState({ shouldBeExact: !this.state.shouldBeExact });
   };
 
   render() {
@@ -134,9 +169,18 @@ class Homepage extends React.Component {
                   handleSelect={this.handleSelect}
                 />
               </div>
+              <div className="exact-match-checkbox">
+                <Checkbox
+                  checked={this.state.shouldBeExact}
+                  onChange={this.toggleExactMatch}
+                />
+                <span className="checkbox-text">Find Exact Match</span>
+              </div>
             </div>
           </div>
         </div>
+
+        <NotificationContainer />
       </div>
     );
   }

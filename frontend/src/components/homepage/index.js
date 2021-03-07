@@ -9,6 +9,7 @@ import { didGetLiquors } from "../../features/liquors/liquorsSlice";
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";
 import CocktailDisplay from "../cocktail-display";
+import ListDropdown from "../list-dropdown";
 
 class Homepage extends React.Component {
   constructor(props) {
@@ -20,6 +21,8 @@ class Homepage extends React.Component {
       complexity: 0,
       image: "",
       error: "",
+      selectedIngredients: [],
+      selectedLiquors: [],
     };
   }
 
@@ -87,17 +90,53 @@ class Homepage extends React.Component {
     return content;
   };
 
+  handleSelect = (optionName) => (selectedOptions) => {
+    const values = selectedOptions.map((option) => option.value);
+
+    this.setState({ [optionName]: values }, () => console.log(this.state));
+  };
+
   render() {
     return (
-      <div className="container">
-        {this.showCocktailDetails()}
-        <Button
-          variant="contained"
-          className="cocktail-button"
-          onClick={this.getCocktail}
-        >
-          Find a random cocktail
-        </Button>
+      <div className="container homepage">
+        <div className="cocktail-display">
+          {this.showCocktailDetails()}
+          <div
+            className={
+              this.state.name.length > 0
+                ? "cocktail-options active"
+                : "cocktail-options inactive"
+            }
+          >
+            <Button
+              variant="contained"
+              className="cocktail-button"
+              onClick={this.getCocktail}
+            >
+              Find a random cocktail
+            </Button>
+            <div className="filters">
+              <div className="filter-dropdown liquors-filter">
+                <div className="input-name">Filter By Liquor:</div>
+                <ListDropdown
+                  name="Liquors"
+                  options={this.props.liquorOptions}
+                  optionName="selectedLiquors"
+                  handleSelect={this.handleSelect}
+                />
+              </div>
+              <div className="filter-dropdown ingredients-filter">
+                <div className="input-name">Filter By Ingredient:</div>
+                <ListDropdown
+                  name="Ingredients"
+                  options={this.props.ingredientOptions}
+                  optionName="selectedIngredients"
+                  handleSelect={this.handleSelect}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

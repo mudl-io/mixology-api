@@ -6,8 +6,39 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  min-height: 75vh;
-  color: grey;
+
+  &.homepage {
+    position: absolute;
+    top: 45px;
+  }
+
+  .cocktail-display {
+    position: absolute;
+    top: 80px;
+    overflow: hidden;
+    min-height: 88vh;
+  }
+
+  .cocktail-options {
+    position: relative;
+    width: 500px;
+
+    &.active {
+      top: -15px;
+    }
+
+    &.inactive {
+      top: 250px;
+    }
+
+    .input-name {
+      text-align: left;
+    }
+
+    .filter-dropdown {
+      margin-top: 20px;
+    }
+  }
 
   .cocktail-button {
     color: black;

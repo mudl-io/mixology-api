@@ -15,6 +15,7 @@ import { didGetLiquors } from "../../features/liquors/liquorsSlice";
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";
 import HelpIcon from "../help-icon";
+import ListDropdown from "../list-dropdown";
 
 class CreateCocktailForm extends React.Component {
   constructor(props) {
@@ -28,8 +29,8 @@ class CreateCocktailForm extends React.Component {
       selectedLiquors: [],
       isPrivate: false,
       cocktailNameValid: true,
-      selectedLiquorsClass: {},
-      selectedIngredientsClass: {},
+      selectedLiquorsAreValid: true,
+      selectedIngredientsAreValid: true,
       complexityClass: {},
       instructionsValid: true,
       submittedForm: false,
@@ -65,16 +66,10 @@ class CreateCocktailForm extends React.Component {
 
   handleSelect = (name) => (selectedOptions) => {
     const values = selectedOptions.map((option) => option.value);
-    const key = name + "Class";
-    const styles = {
-      control: (provided) => ({
-        ...provided,
-        borderWidth: values.length > 0 ? "" : "2px",
-        borderColor: values.length > 0 ? "" : "red",
-      }),
-    };
+    const selectClassName = name + "AreValid";
+    const isValid = values.length > 0;
 
-    this.setState({ [name]: values, [key]: styles });
+    this.setState({ [name]: values, [selectClassName]: isValid });
   };
 
   handleSelectComplexity = (selectedComplexity) => {
@@ -179,22 +174,6 @@ class CreateCocktailForm extends React.Component {
       instructionsValid;
 
     if (!formIsValid) {
-      const ingredientsStyles = {
-        control: (provided) => ({
-          ...provided,
-          borderWidth: this.state.selectedIngredients.length > 0 ? "" : "2px",
-          borderColor: this.state.selectedIngredients.length > 0 ? "" : "red",
-        }),
-      };
-
-      const liquorsStyles = {
-        control: (provided) => ({
-          ...provided,
-          borderWidth: this.state.selectedLiquors.length > 0 ? "" : "2px",
-          borderColor: this.state.selectedLiquors.length > 0 ? "" : "red",
-        }),
-      };
-
       const complexityStyles = {
         control: (provided) => ({
           ...provided,
@@ -206,8 +185,8 @@ class CreateCocktailForm extends React.Component {
       this.setState({
         cocktailNameValid,
         instructionsValid,
-        selectedIngredientsClass: ingredientsStyles,
-        selectedLiquorsClass: liquorsStyles,
+        selectedIngredientsAreValid: this.state.selectedIngredients.length > 0,
+        selectedLiquorsAreValid: this.state.selectedLiquors.length > 0,
         complexityClass: complexityStyles,
       });
     }
@@ -237,22 +216,22 @@ class CreateCocktailForm extends React.Component {
           </label>
           <label className="dropdown-select">
             <div className="input-name">Liquors*:</div>
-            <Select
-              styles={this.state.selectedLiquorsClass}
+            <ListDropdown
               name="Liquors"
-              options={this.buildOptions("liquorOptions")}
-              isMulti
-              onChange={this.handleSelect("selectedLiquors")}
+              options={this.props.liquorOptions}
+              optionName="selectedLiquors"
+              error={!this.state.selectedLiquorsAreValid}
+              handleSelect={this.handleSelect}
             />
           </label>
           <label className="dropdown-select">
             <div className="input-name">Ingredients*:</div>
-            <Select
-              styles={this.state.selectedIngredientsClass}
+            <ListDropdown
               name="Ingredients"
-              options={this.buildOptions("ingredientOptions")}
-              isMulti
-              onChange={this.handleSelect("selectedIngredients")}
+              options={this.props.ingredientOptions}
+              optionName="selectedIngredients"
+              error={!this.state.selectedIngredientsAreValid}
+              handleSelect={this.handleSelect}
             />
           </label>
           <label className="input-text-area">

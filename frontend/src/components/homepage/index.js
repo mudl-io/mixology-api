@@ -100,6 +100,10 @@ class Homepage extends React.Component {
     }
   };
 
+  saveCocktail = async () => {
+    console.log("saved");
+  };
+
   showCocktailDetails = () => {
     let content;
     if (!this.state.error) {
@@ -114,6 +118,8 @@ class Homepage extends React.Component {
           liquors={this.state.liquors}
           instructions={this.state.instructions}
           createdBy={this.state.createdBy}
+          isSaved={false}
+          saveCocktail={this.saveCocktail}
         />
       );
     } else {

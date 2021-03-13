@@ -1,6 +1,7 @@
 import React from "react";
 
 import "./styles.scss";
+import HeartCheckbox from "../heart-checkbox";
 
 class CocktailDisplay extends React.PureComponent {
   constructor(props) {
@@ -52,6 +53,13 @@ class CocktailDisplay extends React.PureComponent {
             Complexity: {this.props.complexity}/10
           </span>
           {this.createdBy()}
+          <div className="heart-checkbox">
+            <HeartCheckbox
+              isChecked={this.props.isSaved}
+              handleClick={this.props.saveCocktail}
+              tabIndex="0"
+            />
+          </div>
         </div>
         <div>
           <h3 className="header">Description</h3>

@@ -81,6 +81,7 @@ class Homepage extends React.Component {
         const cocktail = res.data;
 
         this.setState({
+          cocktailId: cocktail.publicId,
           name: cocktail.name,
           description: cocktail.description,
           amtSaved: cocktail.amtSaved,
@@ -90,6 +91,7 @@ class Homepage extends React.Component {
           liquors: cocktail.liquors,
           instructions: cocktail.instructions,
           createdBy: cocktail.createdBy,
+          isSaved: cocktail.isSaved,
           error: "",
         });
       }
@@ -100,8 +102,34 @@ class Homepage extends React.Component {
     }
   };
 
-  saveCocktail = async () => {
-    console.log("saved");
+  toggleSaveCocktail = async () => {
+    if (!this.props.isSignedIn) {
+      NotificationManager.warning(
+        "Please login or create an account in order to save cocktails!",
+        "Cannot Save",
+        3000
+      );
+
+      return;
+    }
+
+    try {
+      if (!this.state.isSaved) {
+        await axiosInstance.post("/cocktails/save_cocktail/", {
+          cocktail_id: this.state.cocktailId,
+        });
+
+        this.setState({ isSaved: true });
+      } else {
+        await axiosInstance.post("/cocktails/unsave_cocktail/", {
+          cocktail_id: this.state.cocktailId,
+        });
+
+        this.setState({ isSaved: false });
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   showCocktailDetails = () => {
@@ -118,8 +146,8 @@ class Homepage extends React.Component {
           liquors={this.state.liquors}
           instructions={this.state.instructions}
           createdBy={this.state.createdBy}
-          isSaved={false}
-          saveCocktail={this.saveCocktail}
+          isSaved={this.state.isSaved}
+          toggleSaveCocktail={this.toggleSaveCocktail}
         />
       );
     } else {

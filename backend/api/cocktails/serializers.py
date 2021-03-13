@@ -13,6 +13,9 @@ class CocktailSerializer(serializers.ModelSerializer):
     ingredients = IngredientSerializer(many=True)
     liquors = LiquorSerializer(many=True)
     created_by = CustomUserSerializer(many=False)
+    is_saved = (
+        serializers.SerializerMethodField()
+    )  # looks for a method called 'get_is_saved'
 
     class Meta:
         model = Cocktail
@@ -28,6 +31,7 @@ class CocktailSerializer(serializers.ModelSerializer):
             "instructions",
             "created_by",
             "is_private",
+            "is_saved",
         )
 
     # only called when running "serializer.save() in view"
@@ -56,3 +60,11 @@ class CocktailSerializer(serializers.ModelSerializer):
         cocktail.ingredients.set(ingredient_ids)
 
         return cocktail
+
+    def get_is_saved(self, instance):
+        user = self.context["request"].user
+
+        if not user:
+            return False
+
+        return user in instance.saved_by.all()

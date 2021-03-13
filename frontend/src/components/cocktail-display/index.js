@@ -56,7 +56,7 @@ class CocktailDisplay extends React.PureComponent {
           <div className="heart-checkbox">
             <HeartCheckbox
               isChecked={this.props.isSaved}
-              handleClick={this.props.saveCocktail}
+              handleClick={this.props.toggleSaveCocktail}
               tabIndex="0"
             />
           </div>

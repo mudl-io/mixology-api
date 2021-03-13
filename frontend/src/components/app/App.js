@@ -22,7 +22,13 @@ class App extends React.Component {
         <Router history={history}>
           <PrimaryNavigationBar user={this.props.user} />
           <Switch>
-            <Route exact path="/" component={Homepage} />
+            <Route
+              exact
+              path="/"
+              component={() => (
+                <Homepage isSignedIn={this.props.user ? true : false} />
+              )}
+            />
             <Route exact path="/login/">
               {this.props.user ? <Redirect to="/" /> : <Login />}
             </Route>

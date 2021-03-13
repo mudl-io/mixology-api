@@ -19,8 +19,8 @@ const ListDropdown = (props) => {
         control: (provided) => ({
           ...provided,
           color: "black",
-          borderWidth: !props.error ? "0" : "2px",
-          borderColor: !props.error ? "" : "red",
+          borderWidth: "1px",
+          borderColor: !props.error ? "hsl(0, 0%, 80%)" : "red",
         }),
         option: (provided) => ({
           ...provided,

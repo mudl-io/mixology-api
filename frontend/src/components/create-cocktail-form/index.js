@@ -76,8 +76,8 @@ class CreateCocktailForm extends React.Component {
     const isValidStyles = {
       control: (provided) => ({
         ...provided,
-        borderWidth: "",
-        borderColor: "",
+        borderWidth: "1px",
+        borderColor: "hsl(0, 0%, 80%)",
       }),
     };
 
@@ -177,8 +177,8 @@ class CreateCocktailForm extends React.Component {
       const complexityStyles = {
         control: (provided) => ({
           ...provided,
-          borderWidth: this.state.complexity > 0 ? "" : "2px",
-          borderColor: this.state.complexity > 0 ? "" : "red",
+          borderWidth: this.state.complexity > 0 ? "1px" : "2px",
+          borderColor: this.state.complexity > 0 ? "hsl(0, 0%, 80%)" : "red",
         }),
       };
 

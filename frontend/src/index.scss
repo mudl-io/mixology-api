@@ -9,8 +9,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: lighten(black, 20%);
-  color: darken(white, 10%);
+  background-color: white;
+  color: lighten(black, 20%);
 
   label {
     input {
@@ -20,8 +20,9 @@ body {
 
     input,
     textarea {
-      border-width: 0;
+      border-width: 1px;
       border-radius: 3px;
+      border-color: hsl(0, 0%, 80%);
     }
 
     input:focus,

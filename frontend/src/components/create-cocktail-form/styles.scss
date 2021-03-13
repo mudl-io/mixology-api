@@ -1,9 +1,10 @@
+@import "../../utilities/variables";
+
 .create-cocktail-container {
   position: relative;
-  top: 100px;
-  width: 50%;
-  height: 90vh;
-  overflow: hidden;
+  width: 33%;
+  top: 10%;
+  margin: auto;
 
   .create-cocktail-form {
     width: 90%;
@@ -47,6 +48,9 @@
       height: 35px;
       border-radius: 3px;
       border-width: 0;
+      position: relative;
+      left: 34%;
+      background-color: $coolpurp;
 
       input:focus {
         outline-width: 0;
@@ -60,7 +64,7 @@
 
     .help-icon {
       position: relative;
-      left: 54%;
+      left: 103%;
       bottom: 36px;
     }
   }

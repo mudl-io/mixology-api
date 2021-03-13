@@ -69,7 +69,11 @@ class Homepage extends React.Component {
       });
 
       if (res.status === 204) {
-        this.setState({ noMatchFound: true });
+        NotificationManager.warning(
+          "Unfortunately, we were unable to find an exact match for you based on your filters. Try adjusting your filters or checking off the exact match button.",
+          "No Cocktail Found",
+          5000
+        );
       } else {
         const cocktail = res.data;
 
@@ -94,7 +98,7 @@ class Homepage extends React.Component {
 
   showCocktailDetails = () => {
     let content;
-    if (!this.state.error && !this.state.noMatchFound) {
+    if (!this.state.error) {
       content = (
         <CocktailDisplay
           name={this.state.name}
@@ -107,14 +111,6 @@ class Homepage extends React.Component {
           instructions={this.state.instructions}
         />
       );
-    } else if (this.state.noMatchFound) {
-      NotificationManager.warning(
-        "Unfortunately, we were unable to find an exact match for you based on your filters. Try adjusting your filters or checking off the exact match button.",
-        "No Cocktail Found",
-        5000
-      );
-
-      this.setState({ noMatchFound: !this.state.noMatchFound });
     } else {
       content = <div>{this.state.error}</div>;
     }
@@ -133,7 +129,7 @@ class Homepage extends React.Component {
 
   render() {
     return (
-      <div className="container homepage">
+      <div className="homepage-container">
         <div className="cocktail-display">
           {this.showCocktailDetails()}
           <div

@@ -1,16 +1,14 @@
 @import "../../utilities/variables";
 
-.container {
+.homepage-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-
-  &.homepage {
-    position: absolute;
-    top: 45px;
-  }
+  position: absolute;
+  top: 45px;
+  left: 50%;
 
   .cocktail-display {
     position: absolute;
@@ -51,5 +49,9 @@
     color: black;
     background-color: $coolpurp;
     font-weight: 600;
+  }
+
+  .MuiCheckbox-colorSecondary.Mui-checked {
+    color: $coolpurp;
   }
 }

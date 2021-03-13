@@ -5,21 +5,23 @@ import uuid
 
 from ingredients.models import Ingredient
 
+
 def gen_uuid(apps, schema_editor):
     for ingredient in Ingredient.objects.all():
         ingredient.public_id = uuid.uuid4()
-        ingredient.save(update_fields=['public_id'])
+        ingredient.save(update_fields=["public_id"])
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ingredients', '0002_auto_20210303_0011'),
+        ("ingredients", "0002_auto_20210303_0011"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ingredient',
-            name='public_id',
+            model_name="ingredient",
+            name="public_id",
             field=models.UUIDField(default=uuid.uuid4, null=True, editable=False),
         ),
         migrations.RunPython(gen_uuid, reverse_code=migrations.RunPython.noop),

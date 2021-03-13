@@ -23,12 +23,12 @@ from ingredients.views import IngredientsViewSet
 from liquors.views import LiquorsViewSet
 
 router = DefaultRouter()
-router.register(r'^api/cocktails', CocktailsViewSet, basename='cocktail')
-router.register(r'^api/ingredients', IngredientsViewSet, basename='ingredient')
-router.register(r'^api/liquors', LiquorsViewSet, basename='liquor')
+router.register(r"^api/cocktails", CocktailsViewSet, basename="cocktail")
+router.register(r"^api/ingredients", IngredientsViewSet, basename="ingredient")
+router.register(r"^api/liquors", LiquorsViewSet, basename="liquor")
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
-    path('admin/', admin.site.urls),
-    path('api/', include('custom_user.urls'))
+    url(r"^", include(router.urls)),
+    path("admin/", admin.site.urls),
+    path("api/", include("custom_user.urls")),
 ]

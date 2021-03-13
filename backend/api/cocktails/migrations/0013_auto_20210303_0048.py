@@ -7,39 +7,50 @@ import uuid
 
 from cocktails.models import Cocktail
 
+
 def gen_uuid(apps, schema_editor):
     for cocktail in Cocktail.objects.all():
         cocktail.uuid = uuid.uuid4()
-        cocktail.save(update_fields=['uuid'])
+        cocktail.save(update_fields=["uuid"])
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('cocktails', '0012_auto_20210223_0253'),
+        ("cocktails", "0012_auto_20210223_0253"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='cocktail',
-            name='created_by',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='cocktail_created_by', to=settings.AUTH_USER_MODEL),
+            model_name="cocktail",
+            name="created_by",
+            field=models.ForeignKey(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="cocktail_created_by",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='cocktail',
-            name='saved_by',
-            field=models.ManyToManyField(default=None, related_name='cocktail_saved_by', to=settings.AUTH_USER_MODEL),
+            model_name="cocktail",
+            name="saved_by",
+            field=models.ManyToManyField(
+                default=None,
+                related_name="cocktail_saved_by",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='cocktail',
-            name='uuid',
+            model_name="cocktail",
+            name="uuid",
             field=models.UUIDField(default=uuid.uuid4, null=True, editable=False),
         ),
         migrations.RunPython(gen_uuid, reverse_code=migrations.RunPython.noop),
         migrations.AlterField(
-            model_name='cocktail',
-            name='amt_saved',
+            model_name="cocktail",
+            name="amt_saved",
             field=models.PositiveIntegerField(default=0),
         ),
     ]

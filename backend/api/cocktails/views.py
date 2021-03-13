@@ -10,9 +10,6 @@ import random
 from .models import Cocktail
 from .serializers import *
 
-from liquors.models import Liquor
-from ingredients.models import Ingredient
-
 
 class CocktailsViewSet(viewsets.ModelViewSet):
     serializer_class = CocktailSerializer

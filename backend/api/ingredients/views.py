@@ -6,6 +6,7 @@ from rest_framework import status, permissions, viewsets
 from .models import Ingredient
 from .serializers import *
 
+
 class IngredientsViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()

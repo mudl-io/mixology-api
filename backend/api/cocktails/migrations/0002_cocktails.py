@@ -2,19 +2,21 @@
 
 from django.db import migrations
 
+
 def create_data(apps, schema_editor):
-    old_fashioned = apps.get_model('cocktails', 'Cocktail')
+    old_fashioned = apps.get_model("cocktails", "Cocktail")
     old_fashioned(
-        name='Old Fashioned',
-        description='A classic whiskey cocktail. Simple, delicious, and strong.',
+        name="Old Fashioned",
+        description="A classic whiskey cocktail. Simple, delicious, and strong.",
         amt_saved=0,
         complexty=1,
     )
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cocktails', '0001_initial'),
+        ("cocktails", "0001_initial"),
     ]
 
     operations = [

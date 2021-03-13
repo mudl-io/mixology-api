@@ -6,6 +6,7 @@ from rest_framework import status, permissions, viewsets
 from .models import Liquor
 from .serializers import *
 
+
 class LiquorsViewSet(viewsets.ModelViewSet):
     serializer_class = LiquorSerializer
     queryset = Liquor.objects.all()

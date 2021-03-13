@@ -31,6 +31,7 @@ class CocktailsViewSet(viewsets.ModelViewSet):
         liquors_filter = json.loads(request.query_params["liquors_filter"])
         ingredients_filter = json.loads(request.query_params["ingredients_filter"])
         should_be_exact = json.loads(request.query_params["find_exact_match"])
+        hide_user_cocktails = json.loads(request.query_params["hide_user_cocktails"])
 
         cocktails = None
         random_cocktail = None
@@ -39,6 +40,9 @@ class CocktailsViewSet(viewsets.ModelViewSet):
             cocktails = self.get_exact_matches(liquors_filter, ingredients_filter)
         else:
             cocktails = self.get_non_exact_matches(liquors_filter, ingredients_filter)
+
+        if hide_user_cocktails:
+            cocktails = cocktails.filter(created_by__isnull=True)
 
         # try to find as close of a match as possible
         # if this doesn't return any results, send a no content reponse

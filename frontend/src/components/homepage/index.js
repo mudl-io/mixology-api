@@ -29,6 +29,7 @@ class Homepage extends React.Component {
       selectedIngredients: [],
       selectedLiquors: [],
       shouldBeExact: false,
+      hideUserCocktails: false,
     };
   }
 
@@ -65,6 +66,7 @@ class Homepage extends React.Component {
             )
           ),
           find_exact_match: this.state.shouldBeExact,
+          hide_user_cocktails: this.state.hideUserCocktails,
         },
       });
 
@@ -127,6 +129,10 @@ class Homepage extends React.Component {
     this.setState({ shouldBeExact: !this.state.shouldBeExact });
   };
 
+  toggleShowUserCocktails = () => {
+    this.setState({ hideUserCocktails: !this.state.hideUserCocktails });
+  };
+
   render() {
     return (
       <div className="homepage-container">
@@ -165,12 +171,21 @@ class Homepage extends React.Component {
                   handleSelect={this.handleSelect}
                 />
               </div>
-              <div className="exact-match-checkbox">
+              <div className="exact-match checkbox">
                 <Checkbox
                   checked={this.state.shouldBeExact}
                   onChange={this.toggleExactMatch}
                 />
                 <span className="checkbox-text">Find Exact Match</span>
+              </div>
+              <div className="user-created checkbox">
+                <Checkbox
+                  checked={this.state.showUserCocktails}
+                  onChange={this.toggleShowUserCocktails}
+                />
+                <span className="checkbox-text">
+                  Hide User Created Cocktails
+                </span>
               </div>
             </div>
           </div>

@@ -108,9 +108,7 @@ class CreateCocktailForm extends React.Component {
           ingredients: this.state.selectedIngredients,
           isPrivate: this.state.isPrivate,
         });
-      } catch (error) {
-        throw error;
-      } finally {
+
         NotificationManager.success(
           'Your cocktail was successfully created! You can now view this in the "Created Cocktails" section in your profile.',
           "Cocktail Submitted",
@@ -119,7 +117,14 @@ class CreateCocktailForm extends React.Component {
         setTimeout(() => {
           this.setState({ submittedForm: true });
         }, 2000);
-
+      } catch (error) {
+        NotificationManager.error(
+          "There was an error creating your cocktail, please try resubmitting or refreshing the page.",
+          "Creation Error",
+          2000
+        );
+        throw error;
+      } finally {
         return response;
       }
     } else {

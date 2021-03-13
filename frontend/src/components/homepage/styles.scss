@@ -38,8 +38,15 @@
     }
   }
 
-  .exact-match-checkbox {
-    width: 170px;
+  .checkbox {
+    &.exact-match {
+      width: 170px;
+    }
+
+    &.user-created {
+      width: 245px;
+    }
+
     margin-top: 10px;
     position: relative;
     left: -16px;

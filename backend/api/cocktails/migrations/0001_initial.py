@@ -8,18 +8,34 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Cocktail',
+            name="Cocktail",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=240, verbose_name='Name')),
-                ('description', models.TextField(verbose_name='Description')),
-                ('amt_saved', models.PositiveIntegerField()),
-                ('complexty', models.IntegerField(default=0, validators=[django.core.validators.MaxValueValidator(10), django.core.validators.MinValueValidator(0)])),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=240, verbose_name="Name")),
+                ("description", models.TextField(verbose_name="Description")),
+                ("amt_saved", models.PositiveIntegerField()),
+                (
+                    "complexty",
+                    models.IntegerField(
+                        default=0,
+                        validators=[
+                            django.core.validators.MaxValueValidator(10),
+                            django.core.validators.MinValueValidator(0),
+                        ],
+                    ),
+                ),
             ],
         ),
     ]

@@ -8,6 +8,7 @@ import random
 from .models import Cocktail
 from .serializers import *
 
+
 class CocktailsViewSet(viewsets.ModelViewSet):
     serializer_class = CocktailSerializer
     queryset = Cocktail.objects.all()
@@ -24,7 +25,9 @@ class CocktailsViewSet(viewsets.ModelViewSet):
     def random_cocktail(self, request):
         cocktails = Cocktail.objects.filter(is_private=False)
         random_cocktail = random.choice(cocktails)
-        serializer = CocktailSerializer(random_cocktail, context={'request': request}, many=False)
+        serializer = CocktailSerializer(
+            random_cocktail, context={"request": request}, many=False
+        )
 
         if serializer.data:
             return Response(serializer.data)

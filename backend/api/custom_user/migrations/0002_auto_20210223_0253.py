@@ -6,19 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cocktails', '0012_auto_20210223_0253'),
-        ('custom_user', '0001_initial'),
+        ("cocktails", "0012_auto_20210223_0253"),
+        ("custom_user", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='customuser',
-            name='created_cocktails',
-            field=models.ManyToManyField(related_name='custom_user_created', to='cocktails.Cocktail'),
+            model_name="customuser",
+            name="created_cocktails",
+            field=models.ManyToManyField(
+                related_name="custom_user_created", to="cocktails.Cocktail"
+            ),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='saved_cocktails',
-            field=models.ManyToManyField(related_name='custom_user_saved', to='cocktails.Cocktail'),
+            model_name="customuser",
+            name="saved_cocktails",
+            field=models.ManyToManyField(
+                related_name="custom_user_saved", to="cocktails.Cocktail"
+            ),
         ),
     ]

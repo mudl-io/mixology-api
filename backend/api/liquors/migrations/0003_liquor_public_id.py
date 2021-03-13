@@ -5,21 +5,22 @@ import uuid
 
 from liquors.models import Liquor
 
+
 def gen_uuid(apps, schema_editor):
     for liquor in Liquor.objects.all():
         liquor.public_id = uuid.uuid4()
-        liquor.save(update_fields=['public_id'])
+        liquor.save(update_fields=["public_id"])
 
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('liquors', '0002_auto_20210303_0011'),
+        ("liquors", "0002_auto_20210303_0011"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='liquor',
-            name='public_id',
+            model_name="liquor",
+            name="public_id",
             field=models.UUIDField(default=uuid.uuid4, null=True, editable=False),
         ),
         migrations.RunPython(gen_uuid, reverse_code=migrations.RunPython.noop),

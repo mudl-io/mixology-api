@@ -12,7 +12,7 @@ from custom_user.models import CustomUser
 class Cocktail(models.Model):
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField("Name", max_length=240)
-    description = models.TextField("Description")
+    description = models.TextField("Description", null=True, blank=True)
     amt_saved = models.PositiveIntegerField(default=0)
     complexity = models.IntegerField(
         default=0, validators=[MaxValueValidator(10), MinValueValidator(0)]

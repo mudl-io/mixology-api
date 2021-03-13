@@ -31,6 +31,16 @@ class CocktailDisplay extends React.PureComponent {
     }
   };
 
+  createdBy = () => {
+    if (this.props.createdBy) {
+      return (
+        <span className="complexity stat">
+          Created By: {this.props.createdBy.username}
+        </span>
+      );
+    }
+  };
+
   cocktailDetails = () => {
     return (
       <div className="cocktail-details">
@@ -41,6 +51,7 @@ class CocktailDisplay extends React.PureComponent {
           <span className="complexity stat">
             Complexity: {this.props.complexity}/10
           </span>
+          {this.createdBy()}
         </div>
         <div>
           <h3 className="header">Description</h3>

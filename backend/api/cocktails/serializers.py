@@ -3,6 +3,8 @@ from rest_framework import serializers
 from .models import Cocktail
 from ingredients.serializers import IngredientSerializer
 from liquors.serializers import LiquorSerializer
+from custom_user.serializers import CustomUserSerializer
+
 from liquors.models import Liquor
 from ingredients.models import Ingredient
 
@@ -10,6 +12,7 @@ from ingredients.models import Ingredient
 class CocktailSerializer(serializers.ModelSerializer):
     ingredients = IngredientSerializer(many=True)
     liquors = LiquorSerializer(many=True)
+    created_by = CustomUserSerializer(many=False)
 
     class Meta:
         model = Cocktail

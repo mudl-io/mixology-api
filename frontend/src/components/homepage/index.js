@@ -30,6 +30,7 @@ class Homepage extends React.Component {
       selectedLiquors: [],
       shouldBeExact: false,
       hideUserCocktails: false,
+      createdBy: null,
     };
   }
 
@@ -88,6 +89,7 @@ class Homepage extends React.Component {
           ingredients: cocktail.ingredients,
           liquors: cocktail.liquors,
           instructions: cocktail.instructions,
+          createdBy: cocktail.createdBy,
           error: "",
         });
       }
@@ -111,6 +113,7 @@ class Homepage extends React.Component {
           ingredients={this.state.ingredients}
           liquors={this.state.liquors}
           instructions={this.state.instructions}
+          createdBy={this.state.createdBy}
         />
       );
     } else {

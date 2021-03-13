@@ -18,12 +18,12 @@ class CocktailDisplay extends React.PureComponent {
 
   listIngredients = () => {
     if (this.props.ingredients && this.props.liquors) {
-      const ingredients = [...this.props.ingredients, ...this.props.liquors];
+      const ingredients = [...this.props.liquors, ...this.props.ingredients];
       return (
         <ul className="ingredients-list">
           {ingredients.map((ingredient) => (
-            <li key={`${ingredient.pk}-${ingredient.name}`}>
-              {ingredient.name}
+            <li key={`${ingredient.public_id}-${ingredient.name}`}>
+              <span>{ingredient.name}</span>
             </li>
           ))}
         </ul>
@@ -34,19 +34,26 @@ class CocktailDisplay extends React.PureComponent {
   cocktailDetails = () => {
     return (
       <div className="cocktail-details">
-        <img src="http://localhost:8000/static/defaultimg.png" />
-        <h2>{this.props.name}</h2>
-        <h3 className="cocktail-description">{this.props.description}</h3>
         <div>
-          <h3>Instructions:</h3>
-          <p>{this.props.instructions}</p>
+          <img src="http://localhost:8000/static/defaultimg.png" />
+          <h2>{this.props.name}</h2>
+          <span className="saved stat">Times Saved: {this.props.amtSaved}</span>
+          <span className="complexity stat">
+            Complexity: {this.props.complexity}/10
+          </span>
+        </div>
+        <div>
+          <h3 className="header">Description</h3>
+          <p className="content">{this.props.description}</p>
         </div>
         <div className="ingredients-container">
-          <h3 className="ingredients-header">Ingredients:</h3>
+          <h3 className="ingredients header">Ingredients</h3>
           {this.listIngredients()}
         </div>
-        <div>Times Saved: {this.props.amtSaved}</div>
-        <div>Complexity: {this.props.complexity}/10</div>
+        <div>
+          <h3 className="header">Instructions</h3>
+          <p className="content">{this.props.instructions}</p>
+        </div>
       </div>
     );
   };

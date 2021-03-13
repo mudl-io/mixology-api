@@ -5,8 +5,6 @@ import {
   NotificationContainer,
   NotificationManager,
 } from "react-notifications";
-import { FiHelpCircle } from "react-icons/fi";
-import Tooltip from "@material-ui/core/Tooltip";
 import Checkbox from "@material-ui/core/Checkbox";
 import { connect } from "react-redux";
 
@@ -16,6 +14,8 @@ import { didGetLiquors } from "../../features/liquors/liquorsSlice";
 
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";
+import HelpIcon from "../help-icon";
+import ListDropdown from "../list-dropdown";
 
 class CreateCocktailForm extends React.Component {
   constructor(props) {
@@ -29,8 +29,8 @@ class CreateCocktailForm extends React.Component {
       selectedLiquors: [],
       isPrivate: false,
       cocktailNameValid: true,
-      selectedLiquorsClass: {},
-      selectedIngredientsClass: {},
+      selectedLiquorsAreValid: true,
+      selectedIngredientsAreValid: true,
       complexityClass: {},
       instructionsValid: true,
       submittedForm: false,
@@ -66,24 +66,18 @@ class CreateCocktailForm extends React.Component {
 
   handleSelect = (name) => (selectedOptions) => {
     const values = selectedOptions.map((option) => option.value);
-    const key = name + "Class";
-    const styles = {
-      control: (provided) => ({
-        ...provided,
-        borderWidth: values.length > 0 ? "" : "2px",
-        borderColor: values.length > 0 ? "" : "red",
-      }),
-    };
+    const selectClassName = name + "AreValid";
+    const isValid = values.length > 0;
 
-    this.setState({ [name]: values, [key]: styles });
+    this.setState({ [name]: values, [selectClassName]: isValid });
   };
 
   handleSelectComplexity = (selectedComplexity) => {
     const isValidStyles = {
       control: (provided) => ({
         ...provided,
-        borderWidth: "",
-        borderColor: "",
+        borderWidth: "1px",
+        borderColor: "hsl(0, 0%, 80%)",
       }),
     };
 
@@ -114,9 +108,7 @@ class CreateCocktailForm extends React.Component {
           ingredients: this.state.selectedIngredients,
           isPrivate: this.state.isPrivate,
         });
-      } catch (error) {
-        throw error;
-      } finally {
+
         NotificationManager.success(
           'Your cocktail was successfully created! You can now view this in the "Created Cocktails" section in your profile.',
           "Cocktail Submitted",
@@ -125,7 +117,14 @@ class CreateCocktailForm extends React.Component {
         setTimeout(() => {
           this.setState({ submittedForm: true });
         }, 2000);
-
+      } catch (error) {
+        NotificationManager.error(
+          "There was an error creating your cocktail, please try resubmitting or refreshing the page.",
+          "Creation Error",
+          2000
+        );
+        throw error;
+      } finally {
         return response;
       }
     } else {
@@ -180,35 +179,19 @@ class CreateCocktailForm extends React.Component {
       instructionsValid;
 
     if (!formIsValid) {
-      const ingredientsStyles = {
-        control: (provided) => ({
-          ...provided,
-          borderWidth: this.state.selectedIngredients.length > 0 ? "" : "2px",
-          borderColor: this.state.selectedIngredients.length > 0 ? "" : "red",
-        }),
-      };
-
-      const liquorsStyles = {
-        control: (provided) => ({
-          ...provided,
-          borderWidth: this.state.selectedLiquors.length > 0 ? "" : "2px",
-          borderColor: this.state.selectedLiquors.length > 0 ? "" : "red",
-        }),
-      };
-
       const complexityStyles = {
         control: (provided) => ({
           ...provided,
-          borderWidth: this.state.complexity > 0 ? "" : "2px",
-          borderColor: this.state.complexity > 0 ? "" : "red",
+          borderWidth: this.state.complexity > 0 ? "1px" : "2px",
+          borderColor: this.state.complexity > 0 ? "hsl(0, 0%, 80%)" : "red",
         }),
       };
 
       this.setState({
         cocktailNameValid,
         instructionsValid,
-        selectedIngredientsClass: ingredientsStyles,
-        selectedLiquorsClass: liquorsStyles,
+        selectedIngredientsAreValid: this.state.selectedIngredients.length > 0,
+        selectedLiquorsAreValid: this.state.selectedLiquors.length > 0,
         complexityClass: complexityStyles,
       });
     }
@@ -238,22 +221,22 @@ class CreateCocktailForm extends React.Component {
           </label>
           <label className="dropdown-select">
             <div className="input-name">Liquors*:</div>
-            <Select
-              styles={this.state.selectedLiquorsClass}
+            <ListDropdown
               name="Liquors"
-              options={this.buildOptions("liquorOptions")}
-              isMulti
-              onChange={this.handleSelect("selectedLiquors")}
+              options={this.props.liquorOptions}
+              optionName="selectedLiquors"
+              error={!this.state.selectedLiquorsAreValid}
+              handleSelect={this.handleSelect}
             />
           </label>
           <label className="dropdown-select">
             <div className="input-name">Ingredients*:</div>
-            <Select
-              styles={this.state.selectedIngredientsClass}
+            <ListDropdown
               name="Ingredients"
-              options={this.buildOptions("ingredientOptions")}
-              isMulti
-              onChange={this.handleSelect("selectedIngredients")}
+              options={this.props.ingredientOptions}
+              optionName="selectedIngredients"
+              error={!this.state.selectedIngredientsAreValid}
+              handleSelect={this.handleSelect}
             />
           </label>
           <label className="input-text-area">
@@ -283,14 +266,10 @@ class CreateCocktailForm extends React.Component {
               options={this.complexityOptions()}
               onChange={this.handleSelectComplexity}
             />
-            <Tooltip
+            <HelpIcon
               title="A measure of how hard this drink is to make!"
               placement="top"
-            >
-              <span className="help-icon">
-                <FiHelpCircle />
-              </span>
-            </Tooltip>
+            />
           </label>
           <div className="private-cocktail-checkbox">
             <Checkbox

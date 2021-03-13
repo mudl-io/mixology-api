@@ -18,7 +18,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="ui container">
+      <div className="app-container">
         <Router history={history}>
           <PrimaryNavigationBar user={this.props.user} />
           <Switch>

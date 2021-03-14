@@ -26,12 +26,16 @@ class Cocktail(models.Model):
         default=None,
         on_delete=models.SET_NULL,
         null=True,
-        related_name="cocktail_created_by",
+        related_name="created_cocktails",
     )
     saved_by = models.ManyToManyField(
-        CustomUser, default=None, related_name="cocktail_saved_by"
+        CustomUser, default=None, related_name="saved_cocktails"
     )
     is_private = models.BooleanField(default=False)
+
+    @property
+    def times_saved(self):
+        return self.saved_by.count()
 
     # TODO
     # Use the react-tag-input npm module to generate tags associated with different cocktails

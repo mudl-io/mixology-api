@@ -28,7 +28,9 @@ class CocktailsViewSet(viewsets.ModelViewSet):
         try:
             cocktail_id = request.data["cocktail_id"]
             cocktail = Cocktail.objects.filter(public_id=cocktail_id).first()
-            cocktail.saved_by.add(request.user)
+
+            if request.user not in cocktail.saved_by.all():
+                cocktail.saved_by.add(request.user)
 
             return Response(status=status.HTTP_200_OK)
         except:
@@ -39,11 +41,37 @@ class CocktailsViewSet(viewsets.ModelViewSet):
         try:
             cocktail_id = request.data["cocktail_id"]
             cocktail = Cocktail.objects.filter(public_id=cocktail_id).first()
-            cocktail.saved_by.remove(request.user)
+
+            if request.user in cocktail.saved_by.all():
+                cocktail.saved_by.remove(request.user)
 
             return Response(status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=["get"], detail=False)
+    def saved_cocktails(self, request):
+        saved_cocktails = request.user.saved_cocktails.all()
+        serializer = CocktailSerializer(
+            saved_cocktails, context={"request": request}, many=True
+        )
+
+        if serializer.data:
+            return Response(serializer.data)
+
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=["get"], detail=False)
+    def created_cocktails(self, request):
+        created_cocktails = request.user.created_cocktails.all()
+        serializer = CocktailSerializer(
+            created_cocktails, context={"request": request}, many=True
+        )
+
+        if serializer.data:
+            return Response(serializer.data)
+
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     @action(methods=["get"], detail=False)
     def random_cocktail(self, request):

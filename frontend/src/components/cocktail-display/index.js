@@ -45,10 +45,12 @@ class CocktailDisplay extends React.PureComponent {
   cocktailDetails = () => {
     return (
       <div className="cocktail-details">
-        <div>
+        <div className="img-and-stats">
           <img src="http://localhost:8000/static/defaultimg.png" />
           <h2>{this.props.name}</h2>
-          <span className="saved stat">Times Saved: {this.props.amtSaved}</span>
+          <span className="saved stat">
+            Times Saved: {this.props.timesSaved}
+          </span>
           <span className="complexity stat">
             Complexity: {this.props.complexity}/10
           </span>

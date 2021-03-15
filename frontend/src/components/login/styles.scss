@@ -1,6 +1,9 @@
 @import "../../utilities/variables";
 
 .login-form-container {
+  position: absolute;
+  top: 25%;
+  left: 33%;
   width: 30%;
 
   .login-form {

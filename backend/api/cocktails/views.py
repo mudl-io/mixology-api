@@ -14,6 +14,7 @@ from .serializers import *
 class CocktailsViewSet(viewsets.ModelViewSet):
     serializer_class = CocktailSerializer
     queryset = Cocktail.objects.all()
+    lookup_field = "public_id"  # look up by public_id instead of id or pk
     authentication_classes = (JWTAuthentication,)
     permission_classes = (permissions.AllowAny,)
 

@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
 import Checkbox from "@material-ui/core/Checkbox";
+import Drawer from "@material-ui/core/Drawer";
 import {
   NotificationContainer,
   NotificationManager,
@@ -17,6 +18,7 @@ import "./styles.scss";
 import axiosInstance from "../../axiosApi";
 import CocktailDisplay from "../cocktail-display";
 import ListDropdown from "../list-dropdown";
+import RightCocktailSidenav from "../right-cocktail-sidenav";
 
 class Homepage extends React.Component {
   constructor(props) {
@@ -34,6 +36,8 @@ class Homepage extends React.Component {
       createdBy: null,
       isSaved: false,
       timesSaved: 0,
+      canShowMoreCocktails: false,
+      showMoreCocktails: false,
     };
   }
 
@@ -83,6 +87,10 @@ class Homepage extends React.Component {
       } else {
         const cocktail = res.data;
 
+        const canShowMoreCocktails =
+          this.state.selectedIngredients.length > 0 ||
+          this.state.selectedLiquors.length > 0;
+
         this.setState({
           cocktail: cocktail,
           cocktailId: cocktail.publicId,
@@ -96,6 +104,7 @@ class Homepage extends React.Component {
           createdBy: cocktail.createdBy,
           isSaved: cocktail.isSaved,
           timesSaved: cocktail.timesSaved,
+          canShowMoreCocktails: canShowMoreCocktails,
           error: "",
         });
       }
@@ -168,6 +177,19 @@ class Homepage extends React.Component {
     return content;
   };
 
+  showMoreCocktailsOption = () => {
+    if (this.state.canShowMoreCocktails) {
+      return (
+        <div
+          className="show-more-cocktails-text"
+          onClick={this.toggleShowMoreCocktails}
+        >
+          Show more cocktails with these ingredients
+        </div>
+      );
+    }
+  };
+
   handleSelect = (optionName) => (selectedOptions) => {
     const values = selectedOptions.map((option) => option.value);
 
@@ -182,6 +204,10 @@ class Homepage extends React.Component {
     this.setState({ hideUserCocktails: !this.state.hideUserCocktails });
   };
 
+  toggleShowMoreCocktails = () => {
+    this.setState({ showMoreCocktails: !this.state.showMoreCocktails });
+  };
+
   render() {
     return (
       <div className="homepage-container">
@@ -194,6 +220,7 @@ class Homepage extends React.Component {
                 : "cocktail-options inactive"
             }
           >
+            {this.showMoreCocktailsOption()}
             <Button
               variant="contained"
               className="cocktail-button"
@@ -239,6 +266,13 @@ class Homepage extends React.Component {
             </div>
           </div>
         </div>
+
+        <RightCocktailSidenav
+          ingredients={this.state.selectedIngredients}
+          liquors={this.state.selectedLiquors}
+          showMoreCocktails={this.state.showMoreCocktails}
+          toggleShowMoreCocktails={this.toggleShowMoreCocktails}
+        />
 
         <NotificationContainer />
       </div>

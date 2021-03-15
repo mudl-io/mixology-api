@@ -48,13 +48,6 @@ class CocktailDisplay extends React.PureComponent {
         <div className="img-and-stats">
           <img src="http://localhost:8000/static/defaultimg.png" />
           <h2>{this.props.name}</h2>
-          <span className="saved stat">
-            Times Saved: {this.props.timesSaved}
-          </span>
-          <span className="complexity stat">
-            Complexity: {this.props.complexity}/10
-          </span>
-          {this.createdBy()}
           <div className="heart-checkbox">
             <HeartCheckbox
               isChecked={this.props.isSaved}
@@ -62,6 +55,13 @@ class CocktailDisplay extends React.PureComponent {
               tabIndex="0"
             />
           </div>
+          <span className="saved stat">
+            Times Saved: {this.props.timesSaved}
+          </span>
+          <span className="complexity stat">
+            Complexity: {this.props.complexity}/10
+          </span>
+          {this.createdBy()}
         </div>
         <div>
           <h3 className="header">Description</h3>

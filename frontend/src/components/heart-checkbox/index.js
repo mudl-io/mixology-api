@@ -6,7 +6,7 @@ const heart = (isChecked) => {
   return (
     <IconContext.Provider value={{ color: "red" }}>
       <div>
-        {isChecked ? <IoMdHeart size={30} /> : <IoMdHeartEmpty size={30} />}
+        {isChecked ? <IoMdHeart size={20} /> : <IoMdHeartEmpty size={20} />}
       </div>
     </IconContext.Provider>
   );

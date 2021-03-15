@@ -48,13 +48,13 @@ class CocktailDisplay extends React.PureComponent {
         <div className="img-and-stats">
           <img src="http://localhost:8000/static/defaultimg.png" />
           <h2>{this.props.name}</h2>
-          <div className="heart-checkbox">
+          <span className="heart-checkbox">
             <HeartCheckbox
               isChecked={this.props.isSaved}
               handleClick={this.props.toggleSaveCocktail}
               tabIndex="0"
             />
-          </div>
+          </span>
           <span className="saved stat">
             Times Saved: {this.props.timesSaved}
           </span>

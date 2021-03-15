@@ -35,8 +35,8 @@
   }
 
   .heart-checkbox {
-    position: absolute;
-    left: 15%;
-    top: 25.6%;
+    display: inline-block;
+    position: relative;
+    right: 10px;
   }
 }

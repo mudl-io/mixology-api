@@ -12,11 +12,7 @@ from custom_user.models import CustomUser
 class Cocktail(models.Model):
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField("Name", max_length=240)
-<<<<<<< HEAD
     description = models.TextField("Description", null=True, blank=True)
-=======
-    description = models.TextField("Description")
->>>>>>> develop
     amt_saved = models.PositiveIntegerField(default=0)
     complexity = models.IntegerField(
         default=0, validators=[MaxValueValidator(10), MinValueValidator(0)]
@@ -30,12 +26,16 @@ class Cocktail(models.Model):
         default=None,
         on_delete=models.SET_NULL,
         null=True,
-        related_name="cocktail_created_by",
+        related_name="created_cocktails",
     )
     saved_by = models.ManyToManyField(
-        CustomUser, default=None, related_name="cocktail_saved_by"
+        CustomUser, default=None, related_name="saved_cocktails"
     )
     is_private = models.BooleanField(default=False)
+
+    @property
+    def times_saved(self):
+        return self.saved_by.count()
 
     # TODO
     # Use the react-tag-input npm module to generate tags associated with different cocktails

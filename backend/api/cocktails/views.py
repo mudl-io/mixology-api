@@ -14,6 +14,7 @@ from .serializers import *
 class CocktailsViewSet(viewsets.ModelViewSet):
     serializer_class = CocktailSerializer
     queryset = Cocktail.objects.all()
+    lookup_field = "public_id"  # look up by public_id instead of id or pk
     authentication_classes = (JWTAuthentication,)
     permission_classes = (permissions.AllowAny,)
 
@@ -23,7 +24,57 @@ class CocktailsViewSet(viewsets.ModelViewSet):
         cocktail.created_by = self.request.user
         cocktail.save()
 
-    @action(detail=False)
+    @action(methods=["post"], detail=False)
+    def save_cocktail(self, request):
+        try:
+            cocktail_id = request.data["cocktail_id"]
+            cocktail = Cocktail.objects.filter(public_id=cocktail_id).first()
+
+            if request.user not in cocktail.saved_by.all():
+                cocktail.saved_by.add(request.user)
+
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=["post"], detail=False)
+    def unsave_cocktail(self, request):
+        try:
+            cocktail_id = request.data["cocktail_id"]
+            cocktail = Cocktail.objects.filter(public_id=cocktail_id).first()
+
+            if request.user in cocktail.saved_by.all():
+                cocktail.saved_by.remove(request.user)
+
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=["get"], detail=False)
+    def saved_cocktails(self, request):
+        saved_cocktails = request.user.saved_cocktails.all()
+        serializer = CocktailSerializer(
+            saved_cocktails, context={"request": request}, many=True
+        )
+
+        if serializer.data:
+            return Response(serializer.data)
+
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=["get"], detail=False)
+    def created_cocktails(self, request):
+        created_cocktails = request.user.created_cocktails.all()
+        serializer = CocktailSerializer(
+            created_cocktails, context={"request": request}, many=True
+        )
+
+        if serializer.data:
+            return Response(serializer.data)
+
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=["get"], detail=False)
     def random_cocktail(self, request):
         liquors_filter = json.loads(request.query_params["liquors_filter"])
         ingredients_filter = json.loads(request.query_params["ingredients_filter"])

@@ -1,6 +1,7 @@
 import React from "react";
 
 import "./styles.scss";
+import HeartCheckbox from "../heart-checkbox";
 
 class CocktailDisplay extends React.PureComponent {
   constructor(props) {
@@ -31,16 +32,36 @@ class CocktailDisplay extends React.PureComponent {
     }
   };
 
+  createdBy = () => {
+    if (this.props.createdBy) {
+      return (
+        <span className="complexity stat">
+          Created By: {this.props.createdBy.username}
+        </span>
+      );
+    }
+  };
+
   cocktailDetails = () => {
     return (
       <div className="cocktail-details">
-        <div>
+        <div className="img-and-stats">
           <img src="http://localhost:8000/static/defaultimg.png" />
           <h2>{this.props.name}</h2>
-          <span className="saved stat">Times Saved: {this.props.amtSaved}</span>
+          <span className="saved stat">
+            Times Saved: {this.props.timesSaved}
+          </span>
           <span className="complexity stat">
             Complexity: {this.props.complexity}/10
           </span>
+          {this.createdBy()}
+          <div className="heart-checkbox">
+            <HeartCheckbox
+              isChecked={this.props.isSaved}
+              handleClick={this.props.toggleSaveCocktail}
+              tabIndex="0"
+            />
+          </div>
         </div>
         <div>
           <h3 className="header">Description</h3>

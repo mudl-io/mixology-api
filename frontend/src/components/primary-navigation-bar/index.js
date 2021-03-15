@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 
@@ -60,8 +59,12 @@ class PrimaryNavigationBar extends React.Component {
           title={this.props.user.username}
         >
           <Dropdown.Item>Profile</Dropdown.Item>
-          <Dropdown.Item>Saved Cocktails</Dropdown.Item>
-          <Dropdown.Item>Created Cocktails</Dropdown.Item>
+          <Dropdown.Item as={Link} to={"/saved-cocktails/"}>
+            Saved Cocktails
+          </Dropdown.Item>
+          <Dropdown.Item as={Link} to={"/created-cocktails/"}>
+            Created Cocktails
+          </Dropdown.Item>
           <Dropdown.Divider />
           <Dropdown.Item onClick={this.logout}>Logout</Dropdown.Item>
         </DropdownButton>

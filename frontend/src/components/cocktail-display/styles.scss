@@ -8,12 +8,13 @@
     margin: auto;
   }
 
-  .saved {
-    margin-right: 18px;
+  .img-and-stats {
+    text-align: center;
   }
 
   .stat {
     font-weight: 600;
+    margin-right: 18px;
   }
 
   .header {
@@ -31,5 +32,11 @@
     position: relative;
     margin: auto;
     text-align: left;
+  }
+
+  .heart-checkbox {
+    position: absolute;
+    left: 86%;
+    top: 12%;
   }
 }

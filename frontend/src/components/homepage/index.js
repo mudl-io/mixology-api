@@ -2,7 +2,6 @@ import React from "react";
 import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
 import Checkbox from "@material-ui/core/Checkbox";
-import Drawer from "@material-ui/core/Drawer";
 import {
   NotificationContainer,
   NotificationManager,
@@ -190,6 +189,18 @@ class Homepage extends React.Component {
     }
   };
 
+  moreCocktailsSidenav = () => {
+    if (this.state.showMoreCocktails) {
+      return (
+        <RightCocktailSidenav
+          ingredients={this.state.selectedIngredients}
+          liquors={this.state.selectedLiquors}
+          toggleShowMoreCocktails={this.toggleShowMoreCocktails}
+        />
+      );
+    }
+  };
+
   handleSelect = (optionName) => (selectedOptions) => {
     const values = selectedOptions.map((option) => option.value);
 
@@ -267,12 +278,7 @@ class Homepage extends React.Component {
           </div>
         </div>
 
-        <RightCocktailSidenav
-          ingredients={this.state.selectedIngredients}
-          liquors={this.state.selectedLiquors}
-          showMoreCocktails={this.state.showMoreCocktails}
-          toggleShowMoreCocktails={this.toggleShowMoreCocktails}
-        />
+        {this.moreCocktailsSidenav()}
 
         <NotificationContainer />
       </div>

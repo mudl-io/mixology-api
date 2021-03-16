@@ -75,6 +75,22 @@ class CocktailsViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     @action(methods=["get"], detail=False)
+    def filtered_cocktails(self, request):
+        liquors_filter = json.loads(request.query_params["liquors_filter"])
+        ingredients_filter = json.loads(request.query_params["ingredients_filter"])
+
+        cocktails = self.get_non_exact_matches(liquors_filter, ingredients_filter)
+
+        serializer = CocktailSerializer(
+            cocktails, context={"request": request}, many=True
+        )
+
+        if serializer.data:
+            return Response(serializer.data)
+
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=["get"], detail=False)
     def random_cocktail(self, request):
         liquors_filter = json.loads(request.query_params["liquors_filter"])
         ingredients_filter = json.loads(request.query_params["ingredients_filter"])

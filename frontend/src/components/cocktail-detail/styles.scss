@@ -1,0 +1,27 @@
+.cocktail-detail {
+  color: initial;
+  text-decoration: none;
+  margin-bottom: 20px;
+
+  img {
+    height: 30px;
+    position: relative;
+    top: 12px;
+    right: 4px;
+  }
+
+  .name {
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .ingredients-list {
+    .ingredients {
+      white-space: nowrap;
+      max-width: 330px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      margin-left: 30px;
+    }
+  }
+}

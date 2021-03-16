@@ -14,13 +14,11 @@ class SavedCocktailsDisplay extends React.Component {
   }
 
   async componentDidMount() {
-    if (this.props.savedCocktails.length === 0) {
-      const savedCocktails = await axiosInstance.get(
-        "/cocktails/saved_cocktails"
-      );
+    const savedCocktails = await axiosInstance.get(
+      "/cocktails/saved_cocktails"
+    );
 
-      this.props.dispatch(didGetCocktails(savedCocktails.data));
-    }
+    this.props.dispatch(didGetCocktails(savedCocktails.data));
   }
 
   render() {

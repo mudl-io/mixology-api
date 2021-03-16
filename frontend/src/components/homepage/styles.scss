@@ -1,17 +1,70 @@
 @import "../../utilities/variables";
 
-.container {
+.homepage-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  min-height: 75vh;
-  color: grey;
+  position: absolute;
+  top: 45px;
+  left: 50%;
+
+  .cocktail-display {
+    position: absolute;
+    top: 80px;
+    overflow: hidden;
+    min-height: 88vh;
+  }
+
+  .cocktail-options {
+    position: relative;
+    width: 500px;
+
+    &.active {
+      top: -15px;
+    }
+
+    &.inactive {
+      top: 250px;
+    }
+
+    .input-name {
+      text-align: left;
+    }
+
+    .filter-dropdown {
+      margin-top: 20px;
+    }
+  }
+
+  .checkbox {
+    &.exact-match {
+      width: 170px;
+    }
+
+    &.user-created {
+      width: 245px;
+    }
+
+    margin-top: 10px;
+    position: relative;
+    left: -16px;
+  }
 
   .cocktail-button {
     color: black;
     background-color: $coolpurp;
     font-weight: 600;
+  }
+
+  .MuiCheckbox-colorSecondary.Mui-checked {
+    color: $coolpurp;
+  }
+
+  .show-more-cocktails-text {
+    cursor: pointer;
+    color: rgb(6, 69, 173);
+    margin-bottom: 20px;
   }
 }

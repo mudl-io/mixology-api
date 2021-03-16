@@ -3,6 +3,8 @@ from rest_framework import serializers
 from .models import Cocktail
 from ingredients.serializers import IngredientSerializer
 from liquors.serializers import LiquorSerializer
+from custom_user.serializers import CustomUserSerializer
+
 from liquors.models import Liquor
 from ingredients.models import Ingredient
 
@@ -10,6 +12,10 @@ from ingredients.models import Ingredient
 class CocktailSerializer(serializers.ModelSerializer):
     ingredients = IngredientSerializer(many=True)
     liquors = LiquorSerializer(many=True)
+    created_by = CustomUserSerializer(many=False)
+    is_saved = (
+        serializers.SerializerMethodField()
+    )  # looks for a method called 'get_is_saved'
 
     class Meta:
         model = Cocktail
@@ -25,6 +31,8 @@ class CocktailSerializer(serializers.ModelSerializer):
             "instructions",
             "created_by",
             "is_private",
+            "is_saved",
+            "times_saved",
         )
 
     # only called when running "serializer.save() in view"
@@ -53,3 +61,11 @@ class CocktailSerializer(serializers.ModelSerializer):
         cocktail.ingredients.set(ingredient_ids)
 
         return cocktail
+
+    def get_is_saved(self, instance):
+        user = self.context["request"].user
+
+        if not user:
+            return False
+
+        return user in instance.saved_by.all()

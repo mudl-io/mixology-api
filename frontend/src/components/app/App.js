@@ -10,6 +10,9 @@ import Login from "../login";
 import Signup from "../signup";
 import PrimaryNavigationBar from "../primary-navigation-bar";
 import CreateCocktailForm from "../create-cocktail-form";
+import SavedCocktailsDisplay from "../saved-cocktails-display";
+import CreatedCocktailsDisplay from "../created-cocktails-display";
+import DynamicCocktailDisplayContainer from "../dynamic-cocktail-display-container";
 
 class App extends React.Component {
   constructor(props) {
@@ -18,11 +21,17 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="ui container">
+      <div className="app-container">
         <Router history={history}>
           <PrimaryNavigationBar user={this.props.user} />
           <Switch>
-            <Route exact path="/" component={Homepage} />
+            <Route
+              exact
+              path="/"
+              component={() => (
+                <Homepage isSignedIn={this.props.user ? true : false} />
+              )}
+            />
             <Route exact path="/login/">
               {this.props.user ? <Redirect to="/" /> : <Login />}
             </Route>
@@ -33,6 +42,21 @@ class App extends React.Component {
               exact
               path="/create-cocktail/"
               component={CreateCocktailForm}
+            />
+            <Route
+              exact
+              path="/saved-cocktails/"
+              component={SavedCocktailsDisplay}
+            />
+            <Route
+              exact
+              path="/created-cocktails/"
+              component={CreatedCocktailsDisplay}
+            />
+            <Route
+              exact
+              path="/cocktail/:id"
+              component={DynamicCocktailDisplayContainer}
             />
           </Switch>
         </Router>

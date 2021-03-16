@@ -1,20 +1,42 @@
 .cocktail-details {
-  margin-top: 50px;
-  margin-bottom: 20px;
+  margin-bottom: 50px;
+  width: 500px;
+  top: -75px;
 
   .cocktail-description {
     max-width: 500px;
     margin: auto;
   }
 
+  .img-and-stats {
+    text-align: center;
+  }
+
+  .stat {
+    font-weight: 600;
+    margin-right: 18px;
+  }
+
+  .header {
+    text-align: left;
+    padding-bottom: 5px;
+    border-bottom: 1px solid;
+  }
+
+  .content {
+    word-wrap: break-word;
+    text-align: left;
+  }
+
   .ingredients-container {
-    width: 100px;
     position: relative;
     margin: auto;
+    text-align: left;
+  }
 
-    .ingredients-list {
-      position: relative;
-      right: 15%;
-    }
+  .heart-checkbox {
+    display: inline-block;
+    position: relative;
+    right: 10px;
   }
 }

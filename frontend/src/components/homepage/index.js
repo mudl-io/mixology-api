@@ -6,6 +6,7 @@ import {
   NotificationContainer,
   NotificationManager,
 } from "react-notifications";
+import Tooltip from "@material-ui/core/Tooltip";
 
 // redux actions
 import { didGetIngredients } from "../../features/ingredients/ingredientsSlice";
@@ -259,11 +260,18 @@ class Homepage extends React.Component {
                 />
               </div>
               <div className="exact-match checkbox">
-                <Checkbox
-                  checked={this.state.shouldBeExact}
-                  onChange={this.toggleExactMatch}
-                />
-                <span className="checkbox-text">Find Exact Match</span>
+                <Tooltip
+                  placement="top"
+                  title="Check this box if you want to find a cocktail with exactly your selected ingredients, no more, no less!"
+                >
+                  <div>
+                    <Checkbox
+                      checked={this.state.shouldBeExact}
+                      onChange={this.toggleExactMatch}
+                    />
+                    <span className="checkbox-text">Find Exact Match</span>
+                  </div>
+                </Tooltip>
               </div>
               <div className="user-created checkbox">
                 <Checkbox

@@ -32,6 +32,9 @@ class Cocktail(models.Model):
         CustomUser, default=None, related_name="saved_cocktails"
     )
     is_private = models.BooleanField(default=False)
+    viewed_by = models.ManyToManyField(
+        CustomUser, default=None, related_name="viewed_cocktails"
+    )
 
     @property
     def times_saved(self):

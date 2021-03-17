@@ -13,7 +13,6 @@ class Cocktail(models.Model):
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField("Name", max_length=240)
     description = models.TextField("Description", null=True, blank=True)
-    amt_saved = models.PositiveIntegerField(default=0)
     complexity = models.IntegerField(
         default=0, validators=[MaxValueValidator(10), MinValueValidator(0)]
     )
@@ -47,3 +46,19 @@ class Cocktail(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class LiquorAmount(models.Model):
+    liquor = models.ForeignKey(Liquor, on_delete=models.CASCADE)
+    cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
+    amount = models.FloatField(
+        validators=[MinValueValidator(0.0), MaxValueValidator(10)],
+    )
+
+
+class IngredientAmount(models.Model):
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
+    amount = models.FloatField(
+        validators=[MinValueValidator(0.0), MaxValueValidator(10)],
+    )

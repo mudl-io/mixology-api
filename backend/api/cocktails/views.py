@@ -27,8 +27,8 @@ class CocktailsViewSet(viewsets.ModelViewSet):
     @action(methods=["post"], detail=False)
     def save_cocktail(self, request):
         try:
-            cocktail_id = request.data["cocktail_id"]
-            cocktail = Cocktail.objects.filter(public_id=cocktail_id).first()
+            cocktail_id = request.data["public_id"]
+            cocktail = Cocktail.objects.get(public_id=cocktail_id)
 
             if request.user not in cocktail.saved_by.all():
                 cocktail.saved_by.add(request.user)
@@ -40,8 +40,8 @@ class CocktailsViewSet(viewsets.ModelViewSet):
     @action(methods=["post"], detail=False)
     def unsave_cocktail(self, request):
         try:
-            cocktail_id = request.data["cocktail_id"]
-            cocktail = Cocktail.objects.filter(public_id=cocktail_id).first()
+            cocktail_id = request.data["public_id"]
+            cocktail = Cocktail.objects.get(public_id=cocktail_id)
 
             if request.user in cocktail.saved_by.all():
                 cocktail.saved_by.remove(request.user)
@@ -89,6 +89,16 @@ class CocktailsViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=["post"], detail=False)
+    def viewed_cocktail(self, request):
+        cocktail = Cocktail.objects.get(public_id=request.data["public_id"])
+
+        if request.user and not request.user.is_anonymous:
+            cocktail.viewed_by.add(request.user)
+            return Response(status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=["get"], detail=False)
     def random_cocktail(self, request):

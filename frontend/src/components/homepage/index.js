@@ -107,6 +107,10 @@ class Homepage extends React.Component {
           canShowMoreCocktails: canShowMoreCocktails,
           error: "",
         });
+
+        axiosInstance.post("cocktails/viewed_cocktail/", {
+          public_id: cocktail.publicId,
+        });
       }
     } catch (e) {
       this.setState({
@@ -129,7 +133,7 @@ class Homepage extends React.Component {
     try {
       if (!this.state.isSaved) {
         await axiosInstance.post("/cocktails/save_cocktail/", {
-          cocktail_id: this.state.cocktailId,
+          public_id: this.state.cocktailId,
         });
 
         this.setState({ isSaved: true, timesSaved: this.state.timesSaved + 1 });
@@ -137,7 +141,7 @@ class Homepage extends React.Component {
         this.props.dispatch(didSaveCocktail(this.state.cocktail));
       } else {
         await axiosInstance.post("/cocktails/unsave_cocktail/", {
-          cocktail_id: this.state.cocktailId,
+          public_id: this.state.cocktailId,
         });
 
         this.setState({

@@ -20,7 +20,6 @@ class CocktailDisplay extends React.PureComponent {
   listIngredients = () => {
     if (this.props.ingredients && this.props.liquors) {
       const ingredients = [...this.props.liquors, ...this.props.ingredients];
-      console.log(ingredients);
       return (
         <ul className="ingredients-list">
           {ingredients.map((ingredient) => (

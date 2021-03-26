@@ -27,13 +27,21 @@ class CocktailLiquorSerializer(serializers.ModelSerializer):
     # serializer is passed in "cocktail_id" from the CocktailSerializer
     # in order to compute this attribute from their join table
     def get_amount(self, instance):
-        amount = LiquorAmount.objects.filter(
-            liquor=instance, cocktail_id=self.context.get("cocktail_id")
-        ).only("amount")
-        return amount or 0
+        try:
+            liquor_amount = LiquorAmount.objects.get(
+                liquor=instance, cocktail_id=self.context.get("cocktail_id")
+            )
+
+            return liquor_amount.amount
+        except:
+            return 0
 
     def get_unit(self, instance):
-        unit = LiquorAmount.objects.filter(
-            liquor=instance, cocktail_id=self.context.get("cocktail_id")
-        ).only("unit")
-        return unit or "oz"
+        try:
+            liquor_amount = LiquorAmount.objects.get(
+                liquor=instance, cocktail_id=self.context.get("cocktail_id")
+            )
+
+            return liquor_amount.unit
+        except:
+            return "oz"

@@ -24,7 +24,9 @@ class CocktailDisplay extends React.PureComponent {
         <ul className="ingredients-list">
           {ingredients.map((ingredient) => (
             <li key={`${ingredient.public_id}-${ingredient.name}`}>
-              <span>{ingredient.name}</span>
+              <span>
+                {ingredient.name} - {ingredient.amount} {ingredient.unit}
+              </span>
             </li>
           ))}
         </ul>

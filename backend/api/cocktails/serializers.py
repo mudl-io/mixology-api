@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
-from .models import Cocktail
-from ingredients.serializers import IngredientSerializer
-from liquors.serializers import LiquorSerializer
+from .models import Cocktail, LiquorAmount, IngredientAmount
+from ingredients.serializers import CocktailIngredientSerializer
+from liquors.serializers import CocktailLiquorSerializer
 from custom_user.serializers import CustomUserSerializer
 
 from liquors.models import Liquor
@@ -10,12 +10,10 @@ from ingredients.models import Ingredient
 
 
 class CocktailSerializer(serializers.ModelSerializer):
-    ingredients = IngredientSerializer(many=True)
-    liquors = LiquorSerializer(many=True)
-    created_by = CustomUserSerializer(many=False)
-    is_saved = (
-        serializers.SerializerMethodField()
-    )  # looks for a method called 'get_is_saved'
+    ingredients = serializers.SerializerMethodField()
+    liquors = serializers.SerializerMethodField()
+    created_by = CustomUserSerializer(many=False, required=False)
+    is_saved = serializers.SerializerMethodField()
 
     class Meta:
         model = Cocktail
@@ -23,7 +21,6 @@ class CocktailSerializer(serializers.ModelSerializer):
             "public_id",
             "name",
             "description",
-            "amt_saved",
             "complexity",
             "image",
             "ingredients",
@@ -36,29 +33,22 @@ class CocktailSerializer(serializers.ModelSerializer):
         )
 
     # only called when running "serializer.save() in view"
+    # TODO add logic to create LiquorAmount and IngredientAmount records
     def create(self, validated_data):
-        liquors = validated_data.pop("liquors", None)
-        ingredients = validated_data.pop("ingredients", None)
+        liquors = self.get_liquors_to_save()
+        ingredients = self.get_ingredients_to_save()
 
-        liquor_ids = [liquor["public_id"] for liquor in liquors]
-        ingredient_ids = [ingredient["public_id"] for ingredient in ingredients]
-
-        liquor_ids = [
-            liquor["id"]
-            for liquor in Liquor.objects.filter(public_id__in=liquor_ids).values()
-        ]
-        ingredient_ids = [
-            ingredient["id"]
-            for ingredient in Ingredient.objects.filter(
-                public_id__in=ingredient_ids
-            ).values()
-        ]
+        liquor_ids = [liquor["id"] for liquor in liquors.values()]
+        ingredient_ids = [ingredient["id"] for ingredient in ingredients.values()]
 
         cocktail = self.Meta.model(**validated_data)
         cocktail.save()
 
         cocktail.liquors.set(liquor_ids)
         cocktail.ingredients.set(ingredient_ids)
+
+        self.save_liquor_amounts(cocktail)
+        self.save_ingredient_amounts(cocktail)
 
         return cocktail
 
@@ -69,3 +59,67 @@ class CocktailSerializer(serializers.ModelSerializer):
             return False
 
         return user in instance.saved_by.all()
+
+    def get_ingredients(self, instance):
+        return CocktailIngredientSerializer(
+            instance.ingredients, many=True, context={"cocktail_id": instance.id}
+        ).data
+
+    def get_liquors(self, instance):
+        return CocktailLiquorSerializer(
+            instance.liquors, many=True, context={"cocktail_id": instance.id}
+        ).data
+
+    def get_liquors_to_save(self):
+        liquors = self.context["request"].data["liquors"]
+        liquor_ids = [liquor["public_id"] for liquor in liquors]
+
+        return Liquor.objects.filter(public_id__in=liquor_ids)
+
+    def get_ingredients_to_save(self):
+        ingredients = self.context["request"].data["ingredients"]
+        ingredient_ids = [ingredient["public_id"] for ingredient in ingredients]
+
+        return Ingredient.objects.filter(public_id__in=ingredient_ids)
+
+    def save_liquor_amounts(self, cocktail):
+        liquor_models = self.get_liquors_to_save()
+        amounts = []
+
+        for (request_liquor, liquor_model) in zip(
+            self.context["request"].data["liquors"], liquor_models
+        ):
+            amount = request_liquor["amount"]
+            unit = request_liquor["unit"]
+            amounts.append(
+                {
+                    "amount": amount,
+                    "unit": unit,
+                    "liquor": liquor_model,
+                    "cocktail": cocktail,
+                }
+            )
+
+        LiquorAmount.objects.bulk_create([LiquorAmount(**values) for values in amounts])
+
+    def save_ingredient_amounts(self, cocktail):
+        ingredient_models = self.get_ingredients_to_save()
+        amounts = []
+
+        for (request_ingredient, ingredient_model) in zip(
+            self.context["request"].data["ingredients"], ingredient_models
+        ):
+            amount = request_ingredient["amount"]
+            unit = request_ingredient["unit"]
+            amounts.append(
+                {
+                    "amount": amount,
+                    "unit": unit,
+                    "ingredient": ingredient_model,
+                    "cocktail": cocktail,
+                }
+            )
+
+        IngredientAmount.objects.bulk_create(
+            [IngredientAmount(**values) for values in amounts]
+        )

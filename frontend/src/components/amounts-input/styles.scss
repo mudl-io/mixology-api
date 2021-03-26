@@ -1,0 +1,24 @@
+.amount-input-item {
+  margin-top: 20px;
+  display: flex;
+
+  .item-name {
+    display: flex;
+    align-items: center;
+    width: 28%;
+    font-weight: 500;
+  }
+
+  .item-input {
+    width: 40%;
+    margin-right: 15px;
+    text-align: center;
+    border-radius: 6px;
+    border-width: 2px;
+    border-color: lightgrey;
+  }
+
+  .MuiInputLabel-root {
+    z-index: 0;
+  }
+}

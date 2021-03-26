@@ -54,6 +54,7 @@ class LiquorAmount(models.Model):
     amount = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(10)],
     )
+    unit = models.CharField("Unit", max_length=10, default="oz")
 
 
 class IngredientAmount(models.Model):
@@ -62,3 +63,4 @@ class IngredientAmount(models.Model):
     amount = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(10)],
     )
+    unit = models.CharField("Unit", max_length=10, default="oz")

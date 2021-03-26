@@ -33,6 +33,7 @@ class CocktailSerializer(serializers.ModelSerializer):
         )
 
     # only called when running "serializer.save() in view"
+    # TODO add logic to create LiquorAmount and IngredientAmount records
     def create(self, validated_data):
         liquors = validated_data.pop("liquors", None)
         ingredients = validated_data.pop("ingredients", None)

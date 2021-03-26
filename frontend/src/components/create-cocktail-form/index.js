@@ -292,6 +292,8 @@ class CreateCocktailForm extends React.Component {
           <div className="liquor-amounts">
             <AmountsInput
               items={this.state.selectedLiquors}
+              min={0}
+              max={10}
               updateProperty={this.updateProperty}
             />
           </div>
@@ -308,6 +310,8 @@ class CreateCocktailForm extends React.Component {
           <div className="ingredient-amounts">
             <AmountsInput
               items={this.state.selectedIngredients}
+              min={0}
+              max={10}
               updateProperty={this.updateProperty}
             />
           </div>

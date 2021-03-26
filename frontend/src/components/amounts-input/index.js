@@ -56,6 +56,13 @@ const AmountsInput = (props) => {
               InputLabelProps={{
                 shrink: true,
               }}
+              InputProps={{
+                inputProps: {
+                  min: props.min,
+                  max: props.max,
+                  step: "any",
+                },
+              }}
               variant="outlined"
             />
             {unitDropdown(item, props)}

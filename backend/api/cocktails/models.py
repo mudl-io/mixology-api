@@ -25,6 +25,7 @@ class Cocktail(models.Model):
         default=None,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         related_name="created_cocktails",
     )
     saved_by = models.ManyToManyField(

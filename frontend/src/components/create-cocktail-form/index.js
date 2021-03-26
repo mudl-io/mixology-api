@@ -7,6 +7,7 @@ import {
 } from "react-notifications";
 import Checkbox from "@material-ui/core/Checkbox";
 import { connect } from "react-redux";
+import _ from "lodash";
 
 // redux actions
 import { didGetIngredients } from "../../features/ingredients/ingredientsSlice";
@@ -16,6 +17,7 @@ import "./styles.scss";
 import axiosInstance from "../../axiosApi";
 import HelpIcon from "../help-icon";
 import ListDropdown from "../list-dropdown";
+import AmountsInput from "../amounts-input";
 
 class CreateCocktailForm extends React.Component {
   constructor(props) {
@@ -65,7 +67,21 @@ class CreateCocktailForm extends React.Component {
   };
 
   handleSelect = (name) => (selectedOptions) => {
-    const values = selectedOptions.map((option) => option.value);
+    const values = selectedOptions.map((option) => {
+      let value = option.value;
+
+      const existingValue = _.find(this.state[name], (item) => {
+        return item.publicId === value.publicId;
+      });
+
+      if (existingValue) {
+        value = { ...existingValue };
+      } else {
+        value = { ...value, amount: 0, unit: "oz" };
+      }
+
+      return value;
+    });
     const selectClassName = name + "AreValid";
     const isValid = values.length > 0;
 
@@ -85,6 +101,50 @@ class CreateCocktailForm extends React.Component {
       complexity: selectedComplexity.value,
       complexityClass: isValidStyles,
     });
+  };
+
+  /**
+   *
+   * @param {integer} itemId
+   * @param {String} property
+   *
+   * @returns undefined
+   *
+   * takes in the publicId of a selectedLiquor or selectedIngredient
+   * and finds the active ingredient
+   * then updates it's unit or amount property to the selected value
+   */
+  updateProperty = (itemId, property) => (event) => {
+    const updatedIngredient = _.find(
+      this.state.selectedIngredients,
+      (ingredient) => {
+        return ingredient.publicId === itemId;
+      }
+    );
+
+    const updatedLiquor = _.find(this.state.selectedLiquors, (liquor) => {
+      return liquor.publicId === itemId;
+    });
+
+    const itemToUpdate = updatedIngredient || updatedLiquor;
+    const key = updatedIngredient ? "selectedIngredients" : "selectedLiquors";
+
+    // this looks more confusing than it is
+    // iterate through the existing array of selectedIngredients or selectedLiquors
+    // and when you find the item to be updated, update the property (unit or amount)
+    this.setState((prevState) => ({
+      [key]: prevState[key].map((item) => {
+        if (item.publicId === itemToUpdate.publicId) {
+          const updatedItem = {
+            ...itemToUpdate,
+            [property]: event.target.value,
+          };
+          return updatedItem;
+        }
+
+        return item;
+      }),
+    }));
   };
 
   toggleIsPrivate = () => {
@@ -229,6 +289,12 @@ class CreateCocktailForm extends React.Component {
               handleSelect={this.handleSelect}
             />
           </label>
+          <div className="liquor-amounts">
+            <AmountsInput
+              items={this.state.selectedLiquors}
+              updateProperty={this.updateProperty}
+            />
+          </div>
           <label className="dropdown-select">
             <div className="input-name">Ingredients*:</div>
             <ListDropdown
@@ -239,6 +305,12 @@ class CreateCocktailForm extends React.Component {
               handleSelect={this.handleSelect}
             />
           </label>
+          <div className="ingredient-amounts">
+            <AmountsInput
+              items={this.state.selectedIngredients}
+              updateProperty={this.updateProperty}
+            />
+          </div>
           <label className="input-text-area">
             <div className="input-name">Instructions*:</div>
             <textarea

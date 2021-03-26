@@ -15,10 +15,11 @@ class LiquorSerializer(serializers.ModelSerializer):
 
 class CocktailLiquorSerializer(serializers.ModelSerializer):
     amount = serializers.SerializerMethodField()
+    unit = serializers.SerializerMethodField()
 
     class Meta:
         model = Liquor
-        fields = ("public_id", "name", "description", "amount")
+        fields = ("public_id", "name", "description", "amount", "unit")
         extra_kwargs = {
             "public_id": {"validators": []},
         }
@@ -28,5 +29,11 @@ class CocktailLiquorSerializer(serializers.ModelSerializer):
     def get_amount(self, instance):
         amount = LiquorAmount.objects.filter(
             liquor=instance, cocktail_id=self.context.get("cocktail_id")
-        )
+        ).only("amount")
         return amount or 0
+
+    def get_unit(self, instance):
+        unit = LiquorAmount.objects.filter(
+            liquor=instance, cocktail_id=self.context.get("cocktail_id")
+        ).only("unit")
+        return unit or "oz"

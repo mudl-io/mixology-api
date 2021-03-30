@@ -9,15 +9,15 @@ const ingredientsSlice = createSlice({
     },
     // can "mutate" state here bc using the redux toolkit
     // which users Immer library under the hood
-    didCreateIngredients(state, action) {
-      state.ingredients.push(action.payload);
+    didCreateIngredient(state, action) {
+      return [...state, action.payload];
     },
   },
 });
 
 export const {
   didGetIngredients,
-  didCreateIngredients,
+  didCreateIngredient,
 } = ingredientsSlice.actions;
 
 export default ingredientsSlice.reducer;

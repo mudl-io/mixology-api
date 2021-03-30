@@ -86,9 +86,8 @@ class CocktailSerializer(serializers.ModelSerializer):
         liquor_models = self.get_liquors_to_save()
         amounts = []
 
-        for (request_liquor, liquor_model) in zip(
-            self.context["request"].data["liquors"], liquor_models
-        ):
+        for liquor_model in liquor_models:
+            request_liquor = self.find_item(self.context["request"].data["liquors"], liquor_model.public_id)
             amount = request_liquor["amount"]
             unit = request_liquor["unit"]
             amounts.append(
@@ -106,9 +105,8 @@ class CocktailSerializer(serializers.ModelSerializer):
         ingredient_models = self.get_ingredients_to_save()
         amounts = []
 
-        for (request_ingredient, ingredient_model) in zip(
-            self.context["request"].data["ingredients"], ingredient_models
-        ):
+        for ingredient_model in ingredient_models:
+            request_ingredient = self.find_item(self.context["request"].data["ingredients"], ingredient_model.public_id)
             amount = request_ingredient["amount"]
             unit = request_ingredient["unit"]
             amounts.append(
@@ -123,3 +121,8 @@ class CocktailSerializer(serializers.ModelSerializer):
         IngredientAmount.objects.bulk_create(
             [IngredientAmount(**values) for values in amounts]
         )
+
+    def find_item(self, options, public_id):
+        for option in options:
+            if option['public_id'] == str(public_id):
+                return option

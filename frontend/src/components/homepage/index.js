@@ -248,6 +248,7 @@ class Homepage extends React.Component {
               <div className="filter-dropdown liquors-filter">
                 <div className="input-name">Filter By Liquor:</div>
                 <ListDropdown
+                  canCreateNewOptions={false}
                   name="Liquors"
                   options={this.props.liquorOptions}
                   optionName="selectedLiquors"
@@ -257,6 +258,7 @@ class Homepage extends React.Component {
               <div className="filter-dropdown ingredients-filter">
                 <div className="input-name">Filter By Ingredient:</div>
                 <ListDropdown
+                  canCreateNewOptions={false}
                   name="Ingredients"
                   options={this.props.ingredientOptions}
                   optionName="selectedIngredients"

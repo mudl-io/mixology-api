@@ -10,8 +10,14 @@ import { connect } from "react-redux";
 import _ from "lodash";
 
 // redux actions
-import { didGetIngredients } from "../../features/ingredients/ingredientsSlice";
-import { didGetLiquors } from "../../features/liquors/liquorsSlice";
+import {
+  didGetIngredients,
+  didCreateIngredient,
+} from "../../features/ingredients/ingredientsSlice";
+import {
+  didGetLiquors,
+  didCreateLiquor,
+} from "../../features/liquors/liquorsSlice";
 
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";
@@ -86,6 +92,52 @@ class CreateCocktailForm extends React.Component {
     const isValid = values.length > 0;
 
     this.setState({ [name]: values, [selectClassName]: isValid });
+  };
+
+  /**
+   *
+   * @param {String} name
+   * @param {Object} newOption
+   *
+   * takes in a name (selectedIngredient or selectedLiquor) and handles creating a previously
+   * non-existent liquor or ingredient
+   *
+   * this will persist this record and associate it with the currently logged in user.
+   *
+   * only the creator of the custom liquor or ingredient will be able to see or use it while
+   * creating new cocktails.
+   *
+   * @returns undefined
+   */
+  handleCreateNewOption = (name) => async (newOption) => {
+    const endpoint = name === "selectedLiquors" ? "liquors" : "ingredients";
+
+    try {
+      const res = await axiosInstance.post(`/${endpoint}/`, {
+        name: newOption,
+      });
+
+      const createdOption = res.data;
+
+      // add new item to redux store - this will simultaneously update the Selects with the new option
+      if (endpoint === "liquors") {
+        this.props.dispatch(didCreateLiquor(createdOption));
+      } else {
+        this.props.dispatch(didCreateIngredient(createdOption));
+      }
+
+      NotificationManager.success(
+        "Successfully created your ingredient!",
+        "Creation Success",
+        2000
+      );
+    } catch (e) {
+      NotificationManager.error(
+        "There was an error creating your ingredient. Please try again or refresh the page.",
+        "Creation Error",
+        2000
+      );
+    }
   };
 
   handleSelectComplexity = (selectedComplexity) => {
@@ -282,11 +334,13 @@ class CreateCocktailForm extends React.Component {
           <label className="dropdown-select">
             <div className="input-name">Liquors*:</div>
             <ListDropdown
+              canCreateNewOptions={true}
               name="Liquors"
               options={this.props.liquorOptions}
               optionName="selectedLiquors"
               error={!this.state.selectedLiquorsAreValid}
               handleSelect={this.handleSelect}
+              handleCreateNewOption={this.handleCreateNewOption}
             />
           </label>
           <div className="liquor-amounts">
@@ -300,11 +354,13 @@ class CreateCocktailForm extends React.Component {
           <label className="dropdown-select">
             <div className="input-name">Ingredients*:</div>
             <ListDropdown
+              canCreateNewOptions={true}
               name="Ingredients"
               options={this.props.ingredientOptions}
               optionName="selectedIngredients"
               error={!this.state.selectedIngredientsAreValid}
               handleSelect={this.handleSelect}
+              handleCreateNewOption={this.handleCreateNewOption}
             />
           </label>
           <div className="ingredient-amounts">
@@ -371,7 +427,10 @@ class CreateCocktailForm extends React.Component {
 
 const mapStateToProps = (state) => {
   const { liquors, ingredients } = state;
-  return { liquorOptions: liquors, ingredientOptions: ingredients };
+  return {
+    liquorOptions: _.sortBy(_.uniqBy(liquors, "name"), "name"),
+    ingredientOptions: _.sortBy(_.uniqBy(ingredients, "name"), "name"),
+  };
 };
 
 export default connect(mapStateToProps)(CreateCocktailForm);

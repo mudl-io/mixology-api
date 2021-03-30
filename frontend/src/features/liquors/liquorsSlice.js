@@ -10,7 +10,7 @@ const liquorsSlice = createSlice({
     // can "mutate" state here bc using the redux toolkit
     // which users Immer library under the hood
     didCreateLiquor(state, action) {
-      state.liquors.push(action.payload);
+      return [...state, action.payload];
     },
   },
 });

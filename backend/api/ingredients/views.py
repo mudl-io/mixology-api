@@ -1,7 +1,5 @@
-from django.shortcuts import render
-from rest_framework.response import Response
-from rest_framework.decorators import action
-from rest_framework import status, permissions, viewsets
+from rest_framework import viewsets
+from django.db.models import Q
 
 from .models import Ingredient
 from .serializers import *
@@ -9,4 +7,14 @@ from .serializers import *
 
 class IngredientsViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientSerializer
-    queryset = Ingredient.objects.all()
+
+    def perform_create(self, serializer):
+        ingredient = serializer.save()
+
+        ingredient.created_by = self.request.user
+        ingredient.save()
+
+    # perform logical OR to get all elements that are either created by default or are created by the requesting user
+    def get_queryset(self):
+        queryset = Ingredient.objects.filter(Q(created_by__isnull=True) | Q(created_by=self.request.user))
+        return queryset

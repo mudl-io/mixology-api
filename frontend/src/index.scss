@@ -32,6 +32,10 @@ body {
       border-color: #2684ff;
     }
   }
+
+  .MuiCheckbox-colorSecondary.Mui-checked {
+    color: $coolpurp;
+  }
 }
 
 code {

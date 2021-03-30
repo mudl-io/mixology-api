@@ -34,7 +34,6 @@ const dropdown = (props) => {
         options={buildOptions(props.options)}
         isMulti
         onChange={props.handleSelect(props.optionName)}
-        onCreateOption={props.handleCreateNewOption(props.optionName)}
       />
     );
   } else {

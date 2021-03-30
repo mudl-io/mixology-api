@@ -72,7 +72,18 @@ class CreateCocktailForm extends React.Component {
     this.setState({ [event.target.name]: event.target.value, [key]: !isEmpty });
   };
 
-  handleSelect = (name) => (selectedOptions) => {
+  handleSelect = (name) => async (selectedOptions, selectType) => {
+    if (selectType.action === "create-option") {
+      const optionToCreate = _.find(selectedOptions, { __isNew__: true });
+
+      const newOption = await this.createNewOption(name, optionToCreate.label);
+      const index = selectedOptions.findIndex(
+        (option) => option.__isNew__ == true
+      );
+      selectedOptions[index].value = newOption;
+      selectedOptions[index].__isNew__ = false;
+    }
+
     const values = selectedOptions.map((option) => {
       let value = option.value;
 
@@ -96,10 +107,10 @@ class CreateCocktailForm extends React.Component {
 
   /**
    *
-   * @param {String} name
+   * @param {String} optionType
    * @param {Object} newOption
    *
-   * takes in a name (selectedIngredient or selectedLiquor) and handles creating a previously
+   * takes in an optionType (selectedIngredient or selectedLiquor) and handles creating a previously
    * non-existent liquor or ingredient
    *
    * this will persist this record and associate it with the currently logged in user.
@@ -109,8 +120,9 @@ class CreateCocktailForm extends React.Component {
    *
    * @returns undefined
    */
-  handleCreateNewOption = (name) => async (newOption) => {
-    const endpoint = name === "selectedLiquors" ? "liquors" : "ingredients";
+  createNewOption = async (optionType, newOption) => {
+    const endpoint =
+      optionType === "selectedLiquors" ? "liquors" : "ingredients";
 
     try {
       const res = await axiosInstance.post(`/${endpoint}/`, {
@@ -131,6 +143,8 @@ class CreateCocktailForm extends React.Component {
         "Creation Success",
         2000
       );
+
+      return createdOption;
     } catch (e) {
       NotificationManager.error(
         "There was an error creating your ingredient. Please try again or refresh the page.",
@@ -256,21 +270,6 @@ class CreateCocktailForm extends React.Component {
     }
   };
 
-  buildOptions = (optionName) => {
-    if (this.props[optionName].length > 0) {
-      return this.props[optionName].map((option) => {
-        return {
-          value: option,
-          label: option.name,
-          type:
-            optionName === "ingredientOptions"
-              ? "selectedIngredients"
-              : "selectedLiquors",
-        };
-      });
-    }
-  };
-
   complexityOptions = () => {
     return [...Array(10).keys()].map((val) => {
       return { value: 1 + val, label: 1 + val };
@@ -340,7 +339,6 @@ class CreateCocktailForm extends React.Component {
               optionName="selectedLiquors"
               error={!this.state.selectedLiquorsAreValid}
               handleSelect={this.handleSelect}
-              handleCreateNewOption={this.handleCreateNewOption}
             />
           </label>
           <div className="liquor-amounts">
@@ -360,7 +358,6 @@ class CreateCocktailForm extends React.Component {
               optionName="selectedIngredients"
               error={!this.state.selectedIngredientsAreValid}
               handleSelect={this.handleSelect}
-              handleCreateNewOption={this.handleCreateNewOption}
             />
           </label>
           <div className="ingredient-amounts">

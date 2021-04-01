@@ -1,9 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import {
-  NotificationContainer,
-  NotificationManager,
-} from "react-notifications";
+import { NotificationManager } from "react-notifications";
 
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";
@@ -40,8 +37,6 @@ class CreatedCocktailsDisplay extends React.Component {
           title={"Created Cocktails"}
           cocktails={_.sortBy(this.state.createdCocktails, ["name"])}
         />
-
-        <NotificationContainer />
       </div>
     );
   }

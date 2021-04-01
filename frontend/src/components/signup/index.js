@@ -1,5 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
+import TextField from "@material-ui/core/TextField";
+import { NotificationManager } from "react-notifications";
 
 import axiosInstance from "../../axiosApi";
 import "./styles.scss";
@@ -13,7 +15,9 @@ class Signup extends React.Component {
     this.state = {
       username: "",
       password: "",
+      confirmPassword: "",
       email: "",
+      hasAttemptedSubmit: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -26,18 +30,39 @@ class Signup extends React.Component {
 
   async handleSubmit(event) {
     event.preventDefault();
+
+    this.setState({ hasAttemptedSubmit: true });
+
     try {
       const response = await axiosInstance.post("/user/create/", {
         username: this.state.username,
         email: this.state.email,
         password: this.state.password,
       });
+
+      if (response.status === 207) {
+        NotificationManager.error(response.data, "Signup Error", 3000);
+        return;
+      }
+
       this.props.dispatch(loginUser(response.data));
       return response;
-    } catch (error) {
-      console.log(error.stack);
+    } catch (e) {
+      console.log(e);
     }
   }
+
+  validateInput = () => {
+    if (!this.state.hasAttemptedSubmit) {
+      return true;
+    }
+
+    const passwordsMatch = this.state.confirmPassword === this.state.password;
+    const passwordLengthValid = this.state.password.trim().length > 7;
+    const isValid = passwordsMatch && passwordLengthValid;
+
+    return isValid;
+  };
 
   render() {
     return (
@@ -45,29 +70,47 @@ class Signup extends React.Component {
         <h1>Signup</h1>
         <form className="signup-form" onSubmit={this.handleSubmit}>
           <label>
-            <div>Username:</div>
-            <input
+            <TextField
+              required
+              className={this.state.passwordError ? "invalid" : ""}
+              label="Username"
               name="username"
-              type="text"
-              value={this.state.username}
+              variant="outlined"
               onChange={this.handleChange}
             />
           </label>
           <label>
-            <div>Email:</div>
-            <input
+            <TextField
+              required
+              className={this.state.passwordError ? "invalid" : ""}
+              label="Email"
               name="email"
-              type="email"
-              value={this.state.email}
+              variant="outlined"
               onChange={this.handleChange}
             />
           </label>
           <label>
-            <div>Password:</div>
-            <input
+            <TextField
+              required
+              className={this.state.passwordError ? "invalid" : ""}
+              error={!this.validateInput()}
+              helperText="Please make sure your password is at least 8 characters long."
+              label="Password"
               name="password"
               type="password"
-              value={this.state.password}
+              variant="outlined"
+              onChange={this.handleChange}
+            />
+          </label>
+          <label>
+            <TextField
+              required
+              className={this.state.confirmPasswordError ? "invalid" : ""}
+              error={!this.validateInput()}
+              label="Confirm Password"
+              name="confirmPassword"
+              type="password"
+              variant="outlined"
               onChange={this.handleChange}
             />
           </label>

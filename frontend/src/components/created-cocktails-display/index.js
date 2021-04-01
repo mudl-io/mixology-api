@@ -1,9 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import {
-  NotificationContainer,
-  NotificationManager,
-} from "react-notifications";
+import { NotificationManager } from "react-notifications";
 
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";

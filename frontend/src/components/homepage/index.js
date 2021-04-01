@@ -2,10 +2,7 @@ import React from "react";
 import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
 import Checkbox from "@material-ui/core/Checkbox";
-import {
-  NotificationContainer,
-  NotificationManager,
-} from "react-notifications";
+import { NotificationManager } from "react-notifications";
 import Tooltip from "@material-ui/core/Tooltip";
 
 // redux actions

@@ -1,10 +1,7 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
 import Select from "react-select";
-import {
-  NotificationContainer,
-  NotificationManager,
-} from "react-notifications";
+import { NotificationManager } from "react-notifications";
 import Checkbox from "@material-ui/core/Checkbox";
 import { connect } from "react-redux";
 import _ from "lodash";

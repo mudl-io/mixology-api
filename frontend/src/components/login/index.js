@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { NotificationManager } from "react-notifications";
 
 import "./styles.scss";
 import axiosInstance from "../../axiosApi";
@@ -26,6 +27,15 @@ class Login extends React.Component {
         username: this.state.username,
         password: this.state.password,
       });
+
+      if (!response) {
+        NotificationManager.error(
+          "There was an error logging you in. Please make sure your username and password are correct.",
+          "Login Error",
+          3000
+        );
+        return;
+      }
 
       axiosInstance.defaults.headers["Authorization"] =
         "JWT " + response.data.access;

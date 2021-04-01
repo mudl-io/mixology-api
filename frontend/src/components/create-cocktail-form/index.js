@@ -415,8 +415,6 @@ class CreateCocktailForm extends React.Component {
         </form>
 
         {this.shouldRedirect()}
-
-        <NotificationContainer />
       </div>
     );
   }

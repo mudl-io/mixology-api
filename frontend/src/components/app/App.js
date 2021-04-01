@@ -1,6 +1,7 @@
 import React from "react";
 import { Router, Route, Switch, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
+import { NotificationContainer } from "react-notifications";
 
 import "./App.scss";
 import history from "../../history";
@@ -60,6 +61,8 @@ class App extends React.Component {
             />
           </Switch>
         </Router>
+
+        <NotificationContainer />
       </div>
     );
   }

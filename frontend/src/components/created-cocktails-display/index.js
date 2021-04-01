@@ -40,8 +40,6 @@ class CreatedCocktailsDisplay extends React.Component {
           title={"Created Cocktails"}
           cocktails={_.sortBy(this.state.createdCocktails, ["name"])}
         />
-
-        <NotificationContainer />
       </div>
     );
   }

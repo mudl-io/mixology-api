@@ -293,8 +293,6 @@ class Homepage extends React.Component {
         </div>
 
         {this.moreCocktailsSidenav()}
-
-        <NotificationContainer />
       </div>
     );
   }

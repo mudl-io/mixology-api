@@ -22,7 +22,6 @@ class CocktailSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "complexity",
-            "image",
             "ingredients",
             "liquors",
             "instructions",
@@ -33,7 +32,6 @@ class CocktailSerializer(serializers.ModelSerializer):
         )
 
     # only called when running "serializer.save() in view"
-    # TODO add logic to create LiquorAmount and IngredientAmount records
     def create(self, validated_data):
         liquors = self.get_liquors_to_save()
         ingredients = self.get_ingredients_to_save()

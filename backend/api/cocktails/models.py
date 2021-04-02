@@ -16,7 +16,6 @@ class Cocktail(models.Model):
     complexity = models.IntegerField(
         default=0, validators=[MaxValueValidator(10), MinValueValidator(0)]
     )
-    image = models.ImageField(default="./defaultimg.png")
     instructions = models.TextField("Instructions", default="mix together")
     ingredients = models.ManyToManyField(Ingredient)
     liquors = models.ManyToManyField(Liquor)

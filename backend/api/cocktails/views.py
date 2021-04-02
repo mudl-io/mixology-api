@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status, permissions, viewsets
@@ -21,15 +20,22 @@ class CocktailsViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+
+        new_cocktail = self.perform_create(serializer)
+        new_cocktail_serializer = CocktailSerializer(
+            new_cocktail, context={"request": request}, many=False
+        )
+
         headers = self.get_success_headers(serializer.data)
-        return Response(status=status.HTTP_201_CREATED, headers=headers)
+        return Response(new_cocktail_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
         cocktail = serializer.save()
 
         cocktail.created_by = self.request.user
         cocktail.save()
+
+        return cocktail
 
     @action(methods=["post"], detail=False)
     def save_cocktail(self, request):

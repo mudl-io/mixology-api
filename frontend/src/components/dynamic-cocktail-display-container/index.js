@@ -44,7 +44,7 @@ class DynamicCocktailDisplayContainer extends React.Component {
       name: displayCocktail.name,
       description: displayCocktail.description,
       complexity: displayCocktail.complexity,
-      image: "",
+      image: displayCocktail.image,
       createdBy: displayCocktail.createdBy,
       instructions: displayCocktail.instructions,
       liquors: displayCocktail.liquors,
@@ -88,6 +88,7 @@ class DynamicCocktailDisplayContainer extends React.Component {
           name={this.state.name}
           description={this.state.description}
           complexity={this.state.complexity}
+          image={this.state.image}
           ingredients={this.state.ingredients}
           liquors={this.state.liquors}
           instructions={this.state.instructions}

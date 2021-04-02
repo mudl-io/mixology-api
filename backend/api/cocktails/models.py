@@ -16,7 +16,6 @@ class Cocktail(models.Model):
     complexity = models.IntegerField(
         default=0, validators=[MaxValueValidator(10), MinValueValidator(0)]
     )
-    image = models.ImageField(default="./defaultimg.png")
     instructions = models.TextField("Instructions", default="mix together")
     ingredients = models.ManyToManyField(Ingredient)
     liquors = models.ManyToManyField(Liquor)
@@ -39,6 +38,10 @@ class Cocktail(models.Model):
     @property
     def times_saved(self):
         return self.saved_by.count()
+    
+    @property
+    def image(self):
+        return self.cocktail_image.first()
 
     # TODO
     # Use the react-tag-input npm module to generate tags associated with different cocktails

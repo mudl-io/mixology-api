@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "ingredients",
     "liquors",
     "custom_user",
+    "cocktail_images"
 ]
 
 MIDDLEWARE = [
@@ -145,22 +146,24 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = "/assets/static/"
+# MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'api/assets/static','api/assets/media')
 
 # AWS_LOCATION = 'static'
 # AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 # AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
-# AWS_STORAGE_BUCKET_NAME = 'mixology-app-cocktail-images'
+AWS_STORAGE_BUCKET_NAME = 'mixology-app-cocktail-images'
+AWS_S3_REGION_NAME = 'us-east-1'
 # AWS_S3_CUSTOM_DOMAIN='%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 # AWS_S3_OBJECT_PARAMETERS = {
 #      'CacheControl': 'max-age=86400',
 # }
-# DEFAULT_FILE_STORAGE = 'app.storage_backends.MediaStorage'
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage" #'app.storage_backends.MediaStorage'
 # STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-    os.path.join(BASE_DIR, "assets"),
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+#     os.path.join(BASE_DIR, "assets"),
+# ]
 # STATIC_URL='https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 # ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 # STATICFILES_FINDERS = (

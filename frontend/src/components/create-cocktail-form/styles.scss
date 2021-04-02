@@ -3,10 +3,14 @@
 .create-cocktail-container {
   position: relative;
   width: 33%;
-  top: 13%;
+  height: 100vh;
+  top: 9%;
   margin: auto;
 
   .create-cocktail-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 90%;
     margin: auto;
 
@@ -34,22 +38,29 @@
       margin-bottom: 30px;
 
       &.complexity {
-        margin-bottom: 15px;
+        margin-bottom: 0;
+      }
+    }
+
+    .fileContainer {
+      p {
+        letter-spacing: 1px;
       }
     }
 
     .private-cocktail-checkbox {
       width: 150px;
       position: relative;
-      left: -13px;
+      left: -36%;
     }
 
     .create-cocktail-submit-button {
-      height: 35px;
+      height: 40px;
+      width: 45%;
       border-radius: 3px;
       border-width: 0;
       position: relative;
-      left: 34%;
+      margin-top: 10px;
       background-color: $coolpurp;
 
       input:focus {

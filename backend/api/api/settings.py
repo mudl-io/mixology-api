@@ -1,5 +1,4 @@
 import os
-import django_heroku
 from datetime import timedelta
 
 """
@@ -204,5 +203,3 @@ SIMPLE_JWT = {
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
     "TOKEN_TYPE_CLAIM": "token_type",
 }
-
-django_heroku.settings(locals())

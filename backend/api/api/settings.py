@@ -1,5 +1,6 @@
 import os
 import django_heroku
+import dj_database_url
 from datetime import timedelta
 
 """
@@ -99,16 +100,21 @@ WSGI_APPLICATION = "api.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "mixology",
-        "USER": os.environ["POSTGRESQL_USER"],
-        "PASSWORD": os.environ["POSTGRESQL_PW"],
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
-}
+# dev db
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "mixology",
+#         "USER": os.environ["POSTGRESQL_USER"],
+#         "PASSWORD": os.environ["POSTGRESQL_PW"],
+#         "HOST": "localhost",
+#         "PORT": "5432",
+#     }
+# }
+
+# remote db
+DATABASES = {}
+DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 # Custom user model
 AUTH_USER_MODEL = "custom_user.CustomUser"

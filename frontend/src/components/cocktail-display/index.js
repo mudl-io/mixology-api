@@ -45,7 +45,6 @@ class CocktailDisplay extends React.PureComponent {
   };
 
   getImage = () => {
-    console.log(this.props.image);
     if (this.props.image) {
       return this.props.image.image;
     }

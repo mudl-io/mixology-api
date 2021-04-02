@@ -31,10 +31,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "BUILD_PATH='./backend/api' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "postinstall": "npm install --prefix server && npm install --prefix frontend-app"
+    "postinstall": "npm install --prefix frontend-app"
   },
   "engines": {
     "node": "14.6.0",

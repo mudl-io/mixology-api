@@ -156,11 +156,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 # Place static in the same location as webpack build files
 STATIC_ROOT = os.path.join(BASE_DIR, 'build', 'static')
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'build','media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'build','media')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'build/static')
 ]
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # AWS_LOCATION = 'static'
 # AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']

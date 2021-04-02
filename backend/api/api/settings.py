@@ -1,4 +1,5 @@
 import os
+import django_heroku
 from datetime import timedelta
 
 """
@@ -28,7 +29,7 @@ SECRET_KEY = "i=9fq!4+q-qfe#dh0=tu75rrv*l@k!o!*ae9nld-kb*+5y8-lx"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['mixology-app-test.herokuapp.com', '127.0.0.1:8000', 'localhost']
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    'whitenoise.runserver_nostatic',
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
@@ -60,6 +62,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -76,15 +79,15 @@ ROOT_URLCONF = "api.urls"
 
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'build')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
@@ -142,11 +145,16 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
+# https://docs.djangoproject.com/en/2.1/howto/static-files/
+STATIC_URL = '/static/'
+# Place static in the same location as webpack build files
+STATIC_ROOT = os.path.join(BASE_DIR, 'build', 'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'build/static')
+]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STATIC_URL = "/assets/static/"
 # MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'api/assets/static','api/assets/media')
 
 # AWS_LOCATION = 'static'
@@ -203,3 +211,5 @@ SIMPLE_JWT = {
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
     "TOKEN_TYPE_CLAIM": "token_type",
 }
+
+django_heroku.settings(locals())

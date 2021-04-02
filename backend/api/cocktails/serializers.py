@@ -4,6 +4,7 @@ from .models import Cocktail, LiquorAmount, IngredientAmount
 from ingredients.serializers import CocktailIngredientSerializer
 from liquors.serializers import CocktailLiquorSerializer
 from custom_user.serializers import CustomUserSerializer
+from cocktail_images.serializers import CocktailImageSerializer
 
 from liquors.models import Liquor
 from ingredients.models import Ingredient
@@ -12,16 +13,19 @@ from ingredients.models import Ingredient
 class CocktailSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField()
     liquors = serializers.SerializerMethodField()
+    image = CocktailImageSerializer(many=False, required=False)
     created_by = CustomUserSerializer(many=False, required=False)
     is_saved = serializers.SerializerMethodField()
 
     class Meta:
         model = Cocktail
+        read_only_fields = ("image",)
         fields = (
             "public_id",
             "name",
             "description",
             "complexity",
+            "image",
             "ingredients",
             "liquors",
             "instructions",

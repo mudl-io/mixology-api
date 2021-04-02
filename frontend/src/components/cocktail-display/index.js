@@ -44,11 +44,20 @@ class CocktailDisplay extends React.PureComponent {
     }
   };
 
+  getImage = () => {
+    console.log(this.props.image);
+    if (this.props.image) {
+      return this.props.image.image;
+    }
+
+    return "http://localhost:8000/static/defaultimg.png";
+  };
+
   cocktailDetails = () => {
     return (
       <div className="cocktail-details">
         <div className="img-and-stats">
-          <img src="http://localhost:8000/static/defaultimg.png" />
+          <img src={this.getImage()} />
           <h2>{this.props.name}</h2>
           <span className="heart-checkbox">
             <HeartCheckbox

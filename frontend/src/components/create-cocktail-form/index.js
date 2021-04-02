@@ -331,7 +331,7 @@ class CreateCocktailForm extends React.Component {
     try {
       const res = await axiosInstance.post("/cocktail_images/", imageData);
 
-      console.log(res);
+      return res;
     } catch (e) {
       console.log(e);
     } finally {

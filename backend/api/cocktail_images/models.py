@@ -8,4 +8,4 @@ class CocktailImage(models.Model):
     name = models.CharField("Name", max_length=240)
     created_at = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(default="./defaultimg.png")
-    cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE)
+    cocktail = models.ForeignKey(Cocktail, on_delete=models.CASCADE, related_name="cocktail_image")

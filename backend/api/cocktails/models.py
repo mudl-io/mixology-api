@@ -38,6 +38,10 @@ class Cocktail(models.Model):
     @property
     def times_saved(self):
         return self.saved_by.count()
+    
+    @property
+    def image(self):
+        return self.cocktail_image.first()
 
     # TODO
     # Use the react-tag-input npm module to generate tags associated with different cocktails

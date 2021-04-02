@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 import Select from "react-select";
 import { NotificationManager } from "react-notifications";
 import Checkbox from "@material-ui/core/Checkbox";
+import ImageUploader from "react-images-upload";
 import { connect } from "react-redux";
 import _ from "lodash";
 
@@ -27,6 +28,7 @@ class CreateCocktailForm extends React.Component {
     super(props);
     this.state = {
       cocktailName: "",
+      cocktailImg: null,
       description: "",
       complexity: 0,
       instructions: "",
@@ -217,7 +219,7 @@ class CreateCocktailForm extends React.Component {
   handleSubmit = async (event) => {
     event.preventDefault();
 
-    const isValid = this.validateForm();
+    const isValid = true; //this.validateForm();
 
     if (isValid) {
       let response;
@@ -231,6 +233,8 @@ class CreateCocktailForm extends React.Component {
           ingredients: this.state.selectedIngredients,
           isPrivate: this.state.isPrivate,
         });
+
+        const imageResponse = this.uploadCocktailImage(response.data);
 
         NotificationManager.success(
           'Your cocktail was successfully created! You can now view this in the "Created Cocktails" section in your profile.',
@@ -310,6 +314,28 @@ class CreateCocktailForm extends React.Component {
   shouldRedirect = () => {
     if (this.state.submittedForm) {
       return <Redirect to={{ pathname: "/" }} />;
+    }
+  };
+
+  onUploadImage = (img) => {
+    this.setState({ cocktailImg: img[0] });
+  };
+
+  uploadCocktailImage = async (cocktail) => {
+    const imageData = new FormData();
+    imageData.append("image", this.state.cocktailImg);
+    imageData.append("name", this.state.cocktailImg.name);
+    imageData.append("cocktail_id", cocktail.publicId);
+    axiosInstance.defaults.headers["Content-Type"] = "multipart/form-data";
+
+    try {
+      const res = await axiosInstance.post("/cocktail_images/", imageData);
+
+      console.log(res);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      axiosInstance.defaults.headers["Content-Type"] = "application/json";
     }
   };
 
@@ -397,6 +423,15 @@ class CreateCocktailForm extends React.Component {
               placement="top"
             />
           </label>
+          <ImageUploader
+            buttonText="Upload Cocktail Image"
+            onChange={this.onUploadImage}
+            imgExtension={[".jpg", ".gif", ".png", ".gif"]}
+            maxFileSize={9999999}
+            singleImage={true}
+            withIcon={true}
+            withPreview={true}
+          />
           <div className="private-cocktail-checkbox">
             <Checkbox
               checked={this.state.isPrivate}

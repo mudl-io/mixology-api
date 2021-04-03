@@ -1,7 +1,10 @@
 import axios from "axios";
 
+const apiLocation =
+  process.env.API_LOCATION || "https://cocktail-app-test.herokuapp.com/";
+
 const axiosInstance = axios.create({
-  baseURL: `${process.env.API_LOCATION}/api/`,
+  baseURL: `${apiLocation}/api/`,
   timeout: 5000,
   headers: {
     Authorization: "JWT " + localStorage.getItem("access_token"),

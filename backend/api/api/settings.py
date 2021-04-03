@@ -104,7 +104,8 @@ WSGI_APPLICATION = "api.wsgi.application"
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.postgresql_psycopg2",
-#         "NAME": "mixology",
+#         # "NAME": "mixology",
+#         "NAME": "test_mix",
 #         "USER": os.environ["POSTGRESQL_USER"],
 #         "PASSWORD": os.environ["POSTGRESQL_PW"],
 #         "HOST": "localhost",

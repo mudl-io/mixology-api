@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiLocation =
-  process.env.API_LOCATION || "https://cocktail-app-test.herokuapp.com/";
+  process.env.API_LOCATION || "https://cocktail-app-test.herokuapp.com";
 
 const axiosInstance = axios.create({
   baseURL: `${apiLocation}/api/`,

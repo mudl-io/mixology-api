@@ -30,7 +30,7 @@ SECRET_KEY = "i=9fq!4+q-qfe#dh0=tu75rrv*l@k!o!*ae9nld-kb*+5y8-lx"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['mixology-app-test.herokuapp.com', '127.0.0.1:8000', 'localhost']
+ALLOWED_HOSTS = ['cocktail-app-test.herokuapp.com', '127.0.0.1:8000', 'localhost']
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",

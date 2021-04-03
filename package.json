@@ -9,7 +9,9 @@
     "build": "npm run build --prefix frontend",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "postinstall": "npm install --prefix frontend"
+    "postinstall": "npm install --prefix frontend",
+    "predeploy": "npm run build --prefix frontend",
+    "deploy": "gh-pages -d build"
   },
   "engines": {
     "node": "14.6.0",
@@ -35,5 +37,8 @@
   },
   "devDependencies": {
     "dotenv": "^8.2.0"
+  },
+  "dependencies": {
+    "gh-pages": "^3.1.0"
   }
 }

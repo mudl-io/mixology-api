@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "/mixology/static/css/main.dfa4dc6d.chunk.css",
+    "main.js": "/mixology/static/js/main.a3ebe795.chunk.js",
+    "main.js.map": "/mixology/static/js/main.a3ebe795.chunk.js.map",
+    "runtime-main.js": "/mixology/static/js/runtime-main.53067067.js",
+    "runtime-main.js.map": "/mixology/static/js/runtime-main.53067067.js.map",
+    "static/css/2.86e65bd8.chunk.css": "/mixology/static/css/2.86e65bd8.chunk.css",
+    "static/js/2.a7bfd577.chunk.js": "/mixology/static/js/2.a7bfd577.chunk.js",
+    "static/js/2.a7bfd577.chunk.js.map": "/mixology/static/js/2.a7bfd577.chunk.js.map",
+    "static/js/3.d43190af.chunk.js": "/mixology/static/js/3.d43190af.chunk.js",
+    "static/js/3.d43190af.chunk.js.map": "/mixology/static/js/3.d43190af.chunk.js.map",
+    "index.html": "/mixology/index.html",
+    "static/css/2.86e65bd8.chunk.css.map": "/mixology/static/css/2.86e65bd8.chunk.css.map",
+    "static/css/main.dfa4dc6d.chunk.css.map": "/mixology/static/css/main.dfa4dc6d.chunk.css.map",
+    "static/js/2.a7bfd577.chunk.js.LICENSE.txt": "/mixology/static/js/2.a7bfd577.chunk.js.LICENSE.txt",
+    "static/media/UploadIcon.svg": "/mixology/static/media/UploadIcon.469126df.svg",
+    "static/media/index.scss": "/mixology/static/media/notification.c5d9251e.ttf"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.53067067.js",
+    "static/css/2.86e65bd8.chunk.css",
+    "static/js/2.a7bfd577.chunk.js",
+    "static/css/main.dfa4dc6d.chunk.css",
+    "static/js/main.a3ebe795.chunk.js"
+  ]
+}

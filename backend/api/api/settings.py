@@ -1,4 +1,6 @@
 import os
+import django_heroku
+import dj_database_url
 from datetime import timedelta
 
 """
@@ -28,7 +30,13 @@ SECRET_KEY = "i=9fq!4+q-qfe#dh0=tu75rrv*l@k!o!*ae9nld-kb*+5y8-lx"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cocktail-app-test.herokuapp.com',
+                 'https://ofrusch.github.io/mixology-frontend/',
+                 'https://ofrusch.github.io/',
+                 '127.0.0.1:8000',
+                 'localhost',
+                 '127.0.0.1'
+                ]
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
@@ -96,16 +104,21 @@ WSGI_APPLICATION = "api.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "mixology",
-        "USER": os.environ["POSTGRESQL_USER"],
-        "PASSWORD": os.environ["POSTGRESQL_PW"],
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
-}
+# development database
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "mixology",
+#         "USER": os.environ["POSTGRESQL_USER"],
+#         "PASSWORD": os.environ["POSTGRESQL_PW"],
+#         "HOST": "localhost",
+#         "PORT": "5432",
+#     }
+# }
+
+# remote db
+DATABASES = {}
+DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 # Custom user model
 AUTH_USER_MODEL = "custom_user.CustomUser"
@@ -146,12 +159,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = "/assets/static/"
+# STATIC_URL = "/assets/static/"
 # MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'api/assets/static','api/assets/media')
 
 # AWS_LOCATION = 'static'
-# AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
-# AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_STORAGE_BUCKET_NAME = 'mixology-app-cocktail-images'
 AWS_S3_REGION_NAME = 'us-east-1'
 # AWS_S3_CUSTOM_DOMAIN='%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
@@ -171,6 +184,13 @@ DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage" #'app.storage_
 #     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 # )
 # AWS_DEFAULT_ACL = None
+
+STATIC_URL = 'http://' + AWS_STORAGE_BUCKET_NAME + '.s3.amazonaws.com/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'build', 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'build', 'media')
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": (
@@ -203,3 +223,5 @@ SIMPLE_JWT = {
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
     "TOKEN_TYPE_CLAIM": "token_type",
 }
+
+django_heroku.settings(locals())

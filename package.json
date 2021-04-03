@@ -11,7 +11,7 @@
     "eject": "react-scripts eject",
     "postinstall": "npm install --prefix frontend",
     "predeploy": "npm run build --prefix frontend",
-    "deploy": "gh-pages -d build -e frontend"
+    "deploy": "gh-pages -d frontend/build -e frontend"
   },
   "engines": {
     "node": "14.6.0",

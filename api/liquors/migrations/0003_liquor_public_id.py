@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="liquor",
             name="public_id",
-            field=models.UUIDField(default=uuid.uuid4, null=True, editable=False),
+            field=models.UUIDField(default=uuid.uuid4, unique=True),
         ),
-        migrations.RunPython(gen_uuid, reverse_code=migrations.RunPython.noop),
+        # migrations.RunPython(gen_uuid, reverse_code=migrations.RunPython.noop),
     ]

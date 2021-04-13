@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
             name="uuid",
             field=models.UUIDField(default=uuid.uuid4, null=True, editable=False),
         ),
-        migrations.RunPython(gen_uuid, reverse_code=migrations.RunPython.noop),
+        # migrations.RunPython(gen_uuid, reverse_code=migrations.RunPython.noop),
         migrations.AlterField(
             model_name="cocktail",
             name="amt_saved",

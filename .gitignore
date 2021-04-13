@@ -51,3 +51,7 @@ docs/_build/
 
 # Random js/eslint caching
 .eslintcache
+.vscode/
+
+# lazily remove frontend app from being tracked
+frontend

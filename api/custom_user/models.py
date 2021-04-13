@@ -1,0 +1,21 @@
+# djsr/authentication/models.py
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
+
+class CustomUser(AbstractUser):
+    def __str__(self):
+        return self.username
+
+    @property
+    def saved_cocktails_count(self):
+        return self.saved_cocktails.count()
+    
+    @property
+    def created_cocktails_count(self):
+        return self.created_cocktails.count()
+
+    @property
+    def viewed_cocktails_count(self):
+        return self.viewed_cocktails.count()
+    

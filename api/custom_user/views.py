@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .serializers import CustomUserSerializer, CustomTokenObtainPairSerializer
 from .models import CustomUser
@@ -43,7 +44,24 @@ class CustomUserCreate(APIView):
 
         return {"is_valid": True, "error_message": ""}
         
+class CustomUserGet(APIView):
+    permission_classes = ()
+    authentication_classes = (JWTAuthentication,)
 
+    def get(self, request, format="json"):
+        username = request.query_params['username']
+
+        if not username:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        user = CustomUser.objects.get(username=username)
+        serializer = CustomUserSerializer(user, context={"request": request}, many=False)
+
+        if serializer.data:
+            user_res = serializer.data
+            return Response(user_res, status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 class ObtainTokenPairWithUser(TokenObtainPairView):
     permission_classes = (permissions.AllowAny,)

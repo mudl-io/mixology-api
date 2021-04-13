@@ -48,6 +48,7 @@ class CustomUserGet(APIView):
     permission_classes = ()
     authentication_classes = (JWTAuthentication,)
 
+    # find user by username since usernames are unique identifierss
     def get(self, request, format="json"):
         username = request.query_params['username']
 

@@ -89,8 +89,8 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
     @action(methods=["get"], detail=False)
     def filtered_cocktails(self, request):
-        liquors_filter = json.loads(request.query_params["liquors_filter"])
-        ingredients_filter = json.loads(request.query_params["ingredients_filter"])
+        liquors_filter = json.loads(request.query_params["liquors_filter"]) if "liquors_filter" in request.query_params else None
+        ingredients_filter = json.loads(request.query_params["ingredients_filter"]) if  "ingredients_filter" in request.query_params else None
 
         cocktails = self.get_non_exact_matches(liquors_filter, ingredients_filter)
 

@@ -1,7 +1,9 @@
+from typing import OrderedDict
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status, permissions, viewsets
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count
 import json
 import random
@@ -9,6 +11,23 @@ import random
 from .models import Cocktail
 from .serializers import *
 
+
+class CocktailsPaginator(PageNumberPagination):
+    page_size = 30
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+    # return extra data: "user_cocktails_count" and "platform_cocktails_count"
+    # used on frontend to determine if should make subsequent request when infinite scrolling is active
+    def get_paginated_filtered_response(self, data, user_created_count, platform_created_count):
+        return Response(OrderedDict([
+            ('count', self.page.paginator.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('results', data),
+            ('user_cocktails_count', user_created_count),
+            ('platform_cocktails_count', platform_created_count),
+        ]))
 
 class CocktailsViewSet(viewsets.ModelViewSet):
     serializer_class = CocktailSerializer
@@ -89,17 +108,29 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
     @action(methods=["get"], detail=False)
     def filtered_cocktails(self, request):
+        paginator = CocktailsPaginator()
+
         liquors_filter = json.loads(request.query_params["liquors_filter"]) if "liquors_filter" in request.query_params else None
         ingredients_filter = json.loads(request.query_params["ingredients_filter"]) if  "ingredients_filter" in request.query_params else None
 
-        cocktails = self.get_non_exact_matches(liquors_filter, ingredients_filter)
+        cocktails = self.get_non_exact_matches(liquors_filter, ingredients_filter).order_by("name")
 
-        serializer = CocktailSerializer(
-            cocktails, context={"request": request}, many=True
-        )
+        user_created_count = cocktails.filter(created_by__isnull=False).count()
+        platform_created_count = cocktails.filter(created_by__isnull=True).count()
 
-        if serializer.data:
-            return Response(serializer.data)
+        page = paginator.paginate_queryset(request=self.request, queryset=cocktails)
+
+        if page is not None:
+            serializer = CocktailSerializer(
+                page, context={"request": request}, many=True
+            )
+
+            if serializer.data:
+                return paginator.get_paginated_filtered_response(
+                    data=serializer.data,
+                    user_created_count=user_created_count,
+                    platform_created_count=platform_created_count
+                )
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 

@@ -10,6 +10,7 @@ import random
 
 from .models import Cocktail
 from .serializers import *
+from custom_user.models import CustomUser
 
 
 class CocktailsPaginator(PageNumberPagination):
@@ -96,7 +97,15 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
     @action(methods=["get"], detail=False)
     def created_cocktails(self, request):
-        created_cocktails = request.user.created_cocktails.all()
+        created_cocktails = None
+
+        if "username" in request.query_params:
+            user = CustomUser.objects.get(username=request.query_params["username"])
+            created_cocktails = user.created_cocktails.filter(is_private=False)
+        else:
+            created_cocktails = request.user.created_cocktails.all()
+        
+        
         serializer = CocktailSerializer(
             created_cocktails, context={"request": request}, many=True
         )

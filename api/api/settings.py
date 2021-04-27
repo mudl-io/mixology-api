@@ -100,20 +100,20 @@ WSGI_APPLICATION = "api.wsgi.application"
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 # development database
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "mixology",
-        "USER": os.environ["POSTGRESQL_USER"],
-        "PASSWORD": os.environ["POSTGRESQL_PW"],
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": "mixology",
+#         "USER": os.environ["POSTGRESQL_USER"],
+#         "PASSWORD": os.environ["POSTGRESQL_PW"],
+#         "HOST": "localhost",
+#         "PORT": "5432",
+#     }
+# }
 
 # remote db
-# DATABASES = {}
-# DATABASES['default'] = dj_database_url.config(conn_max_age=600)
+DATABASES = {}
+DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 # Custom user model
 AUTH_USER_MODEL = "custom_user.CustomUser"

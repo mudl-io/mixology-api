@@ -2,6 +2,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from .models import CustomUser
 
+from profile_pictures.serializers import ProfilePictureSerializer
 
 class CustomUserSerializer(serializers.ModelSerializer):
     """
@@ -11,11 +12,12 @@ class CustomUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     username = serializers.CharField()
     password = serializers.CharField(min_length=8, write_only=True)
+    active_profile_picture = ProfilePictureSerializer(many=False, required=False)
 
     class Meta:
         model = CustomUser
-        fields = ("id", "email", "username", "password", "saved_cocktails_count", "created_cocktails_count", "viewed_cocktails_count")
-        read_only_fields = ("saved_cocktails_count", "created_cocktails_count", "viewed_cocktails_count")
+        fields = ("id", "email", "username", "password", "saved_cocktails_count", "created_cocktails_count", "viewed_cocktails_count", "active_profile_picture")
+        read_only_fields = ("saved_cocktails_count", "created_cocktails_count", "viewed_cocktails_count", "active_profile_picture")
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):

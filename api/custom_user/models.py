@@ -1,6 +1,7 @@
 # djsr/authentication/models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+import uuid
 
 
 class CustomUser(AbstractUser):
@@ -18,4 +19,7 @@ class CustomUser(AbstractUser):
     @property
     def viewed_cocktails_count(self):
         return self.viewed_cocktails.count()
-    
+
+    @property
+    def active_profile_picture(self):
+        return self.profile_picture.get(is_active=True)

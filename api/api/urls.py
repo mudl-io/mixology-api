@@ -22,12 +22,14 @@ from cocktails.views import CocktailsViewSet
 from ingredients.views import IngredientsViewSet
 from liquors.views import LiquorsViewSet
 from cocktail_images.views import CocktailImagesViewSet
+from profile_pictures.views import ProfilePictureViewset
 
 router = DefaultRouter()
 router.register(r"^api/cocktails", CocktailsViewSet, basename="cocktail")
 router.register(r"^api/ingredients", IngredientsViewSet, basename="ingredient")
 router.register(r"^api/liquors", LiquorsViewSet, basename="liquor")
 router.register(r"^api/cocktail_images", CocktailImagesViewSet, basename="cocktail_image")
+router.register(r"^api/profile_pictures", ProfilePictureViewset, basename="profile_picture")
 
 urlpatterns = [
     url(r"^", include(router.urls)),

@@ -6,6 +6,13 @@ from .serializers import ProfilePictureSerializer
 
 class ProfilePictureViewset(viewsets.ModelViewSet):
     serializer_class = ProfilePictureSerializer
-    queryset = ProfilePicture.objects.all()
     authentication_classes = (JWTAuthentication,)
     permission_classes = (permissions.AllowAny,)
+
+    def get_queryset(self):
+        queryset = ProfilePicture.objects.all()
+
+        if self.request.user and not self.request.user.is_anonymous:
+            return queryset.filter(user=self.request.user)
+        
+        return None

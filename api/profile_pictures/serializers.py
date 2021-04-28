@@ -7,7 +7,8 @@ class ProfilePictureSerializer(serializers.ModelSerializer):
         model = ProfilePicture
         fields = (
             "public_id",
-            "image"
+            "image",
+            "is_active"
         )
     
     def create(self, validated_data):

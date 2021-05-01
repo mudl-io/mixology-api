@@ -56,7 +56,8 @@ INSTALLED_APPS = [
     "ingredients",
     "liquors",
     "custom_user",
-    "cocktail_images"
+    "cocktail_images",
+    "profile_pictures"
 ]
 
 MIDDLEWARE = [

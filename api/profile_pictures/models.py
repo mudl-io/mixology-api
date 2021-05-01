@@ -9,3 +9,9 @@ class ProfilePicture(models.Model):
     image = models.ImageField(default="./defaultimg.png")
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="profile_picture")
     is_active =  models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.is_active:
+           ProfilePicture.objects.exclude(id__in=[self.id]).filter(user=self.user).update(is_active=False)
+
+        super(ProfilePicture, self).save(*args, **kwargs)

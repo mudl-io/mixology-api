@@ -54,23 +54,23 @@ class CocktailSerializer(serializers.ModelSerializer):
 
         return cocktail
 
-    def get_is_saved(self, instance):
-        user = self.context["request"].user
+    def update(self, instance, validated_data):
+        liquors = self.get_liquors_to_save()
+        ingredients = self.get_ingredients_to_save()
 
-        if not user:
-            return False
+        liquor_ids = [liquor["id"] for liquor in liquors.values()]
+        ingredient_ids = [ingredient["id"] for ingredient in ingredients.values()]
 
-        return user in instance.saved_by.all()
+        # update cocktail model fields
+        Cocktail.objects.filter(id=instance.id).update(**validated_data)
 
-    def get_ingredients(self, instance):
-        return CocktailIngredientSerializer(
-            instance.ingredients, many=True, context={"cocktail_id": instance.id}
-        ).data
+        instance.liquors.set(liquor_ids)
+        instance.ingredients.set(ingredient_ids)
 
-    def get_liquors(self, instance):
-        return CocktailLiquorSerializer(
-            instance.liquors, many=True, context={"cocktail_id": instance.id}
-        ).data
+        self.update_liquor_amounts(instance)
+        self.update_ingredient_amounts(instance)
+
+        return instance
 
     def get_liquors_to_save(self):
         liquors = self.context["request"].data["liquors"]
@@ -103,6 +103,37 @@ class CocktailSerializer(serializers.ModelSerializer):
 
         LiquorAmount.objects.bulk_create([LiquorAmount(**values) for values in amounts])
 
+    def update_liquor_amounts(self, cocktail):
+        existing_liquors = [liquor_amount.liquor for liquor_amount in LiquorAmount.objects.filter(cocktail=cocktail)]
+        request_liquors = self.get_liquors_to_save()
+        liquors_to_update = set(existing_liquors).intersection(set(request_liquors))
+        liquors_to_create = set(request_liquors).difference(set(existing_liquors))
+
+        # perform updates
+        for update_model in liquors_to_update:
+            request_liquor = self.find_item(self.context["request"].data["liquors"], update_model.public_id)
+            amount = request_liquor["amount"]
+            unit = request_liquor["unit"]
+
+            LiquorAmount.objects.filter(liquor=update_model, cocktail=cocktail).update(amount=amount, unit=unit)
+        
+        # perform creations
+        amounts = []
+        for create_model in liquors_to_create:
+            request_liquor = self.find_item(self.context["request"].data["liquors"], create_model.public_id)
+            amount = request_liquor["amount"]
+            unit = request_liquor["unit"]
+            amounts.append(
+                {
+                    "amount": amount,
+                    "unit": unit,
+                    "liquor": create_model,
+                    "cocktail": cocktail,
+                }
+            )
+
+        LiquorAmount.objects.bulk_create([LiquorAmount(**values) for values in amounts])
+
     def save_ingredient_amounts(self, cocktail):
         ingredient_models = self.get_ingredients_to_save()
         amounts = []
@@ -123,8 +154,57 @@ class CocktailSerializer(serializers.ModelSerializer):
         IngredientAmount.objects.bulk_create(
             [IngredientAmount(**values) for values in amounts]
         )
+    
+    def update_ingredient_amounts(self, cocktail):
+        existing_ingredients = [ingredient_amount.ingredient for ingredient_amount in IngredientAmount.objects.filter(cocktail=cocktail)]
+        request_ingredients = self.get_ingredients_to_save()
+        ingredients_to_update = set(existing_ingredients).intersection(set(request_ingredients))
+        ingredients_to_create = set(request_ingredients).difference(set(existing_ingredients))
+
+        # perform updates
+        for update_model in ingredients_to_update:
+            request_ingredient = self.find_item(self.context["request"].data["ingredients"], update_model.public_id)
+            amount = request_ingredient["amount"]
+            unit = request_ingredient["unit"]
+
+            IngredientAmount.objects.filter(ingredient=update_model, cocktail=cocktail).update(amount=amount, unit=unit)
+        
+        # perform creations
+        amounts = []
+        for create_model in ingredients_to_create:
+            request_ingredient = self.find_item(self.context["request"].data["ingredients"], create_model.public_id)
+            amount = request_ingredient["amount"]
+            unit = request_ingredient["unit"]
+            amounts.append(
+                {
+                    "amount": amount,
+                    "unit": unit,
+                    "liquor": create_model,
+                    "cocktail": cocktail,
+                }
+            )
+
+        IngredientAmount.objects.bulk_create([LiquorAmount(**values) for values in amounts])
 
     def find_item(self, options, public_id):
         for option in options:
             if option['public_id'] == str(public_id):
                 return option
+
+    def get_is_saved(self, instance):
+        user = self.context["request"].user
+
+        if not user:
+            return False
+
+        return user in instance.saved_by.all()
+
+    def get_ingredients(self, instance):
+        return CocktailIngredientSerializer(
+            instance.ingredients, many=True, context={"cocktail_id": instance.id}
+        ).data
+
+    def get_liquors(self, instance):
+        return CocktailLiquorSerializer(
+            instance.liquors, many=True, context={"cocktail_id": instance.id}
+        ).data

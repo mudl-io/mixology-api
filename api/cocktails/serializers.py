@@ -84,8 +84,8 @@ class CocktailSerializer(serializers.ModelSerializer):
 
         return Ingredient.objects.filter(public_id__in=ingredient_ids)
 
-    def save_liquor_amounts(self, cocktail):
-        liquor_models = self.get_liquors_to_save()
+    def save_liquor_amounts(self, cocktail, liquors_to_create=None):
+        liquor_models = liquors_to_create or self.get_liquors_to_save()
         amounts = []
 
         for liquor_model in liquor_models:
@@ -109,6 +109,9 @@ class CocktailSerializer(serializers.ModelSerializer):
         liquors_to_update = set(existing_liquors).intersection(set(request_liquors))
         liquors_to_create = set(request_liquors).difference(set(existing_liquors))
 
+        # delete unused liquors
+        LiquorAmount.objects.filter(cocktail=cocktail).exclude(liquor__in=request_liquors).delete()
+
         # perform updates
         for update_model in liquors_to_update:
             request_liquor = self.find_item(self.context["request"].data["liquors"], update_model.public_id)
@@ -118,24 +121,11 @@ class CocktailSerializer(serializers.ModelSerializer):
             LiquorAmount.objects.filter(liquor=update_model, cocktail=cocktail).update(amount=amount, unit=unit)
         
         # perform creations
-        amounts = []
-        for create_model in liquors_to_create:
-            request_liquor = self.find_item(self.context["request"].data["liquors"], create_model.public_id)
-            amount = request_liquor["amount"]
-            unit = request_liquor["unit"]
-            amounts.append(
-                {
-                    "amount": amount,
-                    "unit": unit,
-                    "liquor": create_model,
-                    "cocktail": cocktail,
-                }
-            )
+        if len(liquors_to_create) > 0:
+            self.save_liquor_amounts(cocktail, liquors_to_create)
 
-        LiquorAmount.objects.bulk_create([LiquorAmount(**values) for values in amounts])
-
-    def save_ingredient_amounts(self, cocktail):
-        ingredient_models = self.get_ingredients_to_save()
+    def save_ingredient_amounts(self, cocktail, ingredients_to_create=None):
+        ingredient_models = ingredients_to_create or self.get_ingredients_to_save()
         amounts = []
 
         for ingredient_model in ingredient_models:
@@ -161,6 +151,9 @@ class CocktailSerializer(serializers.ModelSerializer):
         ingredients_to_update = set(existing_ingredients).intersection(set(request_ingredients))
         ingredients_to_create = set(request_ingredients).difference(set(existing_ingredients))
 
+        # delete unused ingredients
+        IngredientAmount.objects.filter(cocktail=cocktail).exclude(ingredient__in=request_ingredients).delete()
+
         # perform updates
         for update_model in ingredients_to_update:
             request_ingredient = self.find_item(self.context["request"].data["ingredients"], update_model.public_id)
@@ -170,21 +163,8 @@ class CocktailSerializer(serializers.ModelSerializer):
             IngredientAmount.objects.filter(ingredient=update_model, cocktail=cocktail).update(amount=amount, unit=unit)
         
         # perform creations
-        amounts = []
-        for create_model in ingredients_to_create:
-            request_ingredient = self.find_item(self.context["request"].data["ingredients"], create_model.public_id)
-            amount = request_ingredient["amount"]
-            unit = request_ingredient["unit"]
-            amounts.append(
-                {
-                    "amount": amount,
-                    "unit": unit,
-                    "liquor": create_model,
-                    "cocktail": cocktail,
-                }
-            )
-
-        IngredientAmount.objects.bulk_create([LiquorAmount(**values) for values in amounts])
+        if len(ingredients_to_create) > 0:
+            self.save_ingredient_amounts(cocktail, ingredients_to_create)
 
     def find_item(self, options, public_id):
         for option in options:

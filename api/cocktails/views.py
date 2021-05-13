@@ -92,7 +92,7 @@ class CocktailsViewSet(viewsets.ModelViewSet):
         
         if page is not None:
             serializer = CocktailSerializer(
-                saved_cocktails, context={"request": request}, many=True
+                page, context={"request": request}, many=True
             )
 
             if serializer.data:
@@ -102,21 +102,29 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
     @action(methods=["get"], detail=False)
     def created_cocktails(self, request):
+        paginator = CocktailsPaginator()
+
         created_cocktails = None
+        page = None
 
         if "username" in request.query_params:
             user = CustomUser.objects.get(username=request.query_params["username"])
             created_cocktails = user.created_cocktails.filter(is_private=False)
         else:
-            created_cocktails = request.user.created_cocktails.all()
-        
-        
+            created_cocktails = request.user.created_cocktails.all().order_by("name")
+            page = paginator.paginate_queryset(request=self.request, queryset=created_cocktails)
+
+        data = page or created_cocktails
+
         serializer = CocktailSerializer(
-            created_cocktails, context={"request": request}, many=True
+            data, context={"request": request}, many=True
         )
 
         if serializer.data:
-            return Response(serializer.data)
+            if page is not None:
+                return paginator.get_paginated_response(data=serializer.data)
+            else:
+                return Response(serializer.data)
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 

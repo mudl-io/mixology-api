@@ -85,13 +85,18 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
     @action(methods=["get"], detail=False)
     def saved_cocktails(self, request):
-        saved_cocktails = request.user.saved_cocktails.all()
-        serializer = CocktailSerializer(
-            saved_cocktails, context={"request": request}, many=True
-        )
+        paginator = CocktailsPaginator()
+        saved_cocktails = request.user.saved_cocktails.all().order_by("name")
 
-        if serializer.data:
-            return Response(serializer.data)
+        page = paginator.paginate_queryset(request=self.request, queryset=saved_cocktails)
+        
+        if page is not None:
+            serializer = CocktailSerializer(
+                saved_cocktails, context={"request": request}, many=True
+            )
+
+            if serializer.data:
+                return paginator.get_paginated_response(data=serializer.data)
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -125,7 +130,7 @@ class CocktailsViewSet(viewsets.ModelViewSet):
         cocktails = self.get_non_exact_matches(liquors_filter, ingredients_filter).order_by("name")
 
         user_created_count = cocktails.filter(created_by__isnull=False).count()
-        platform_created_count = cocktails.filter(created_by__isnull=True).count()
+        platform_created_count = cocktails.count() - user_created_count
 
         page = paginator.paginate_queryset(request=self.request, queryset=cocktails)
 

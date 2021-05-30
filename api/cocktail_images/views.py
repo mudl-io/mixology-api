@@ -10,3 +10,4 @@ class CocktailImagesViewSet(viewsets.ModelViewSet):
     queryset = CocktailImage.objects.all()
     authentication_classes = (JWTAuthentication,)
     permission_classes = (permissions.AllowAny,)
+    lookup_field = "public_id"  # look up by public_id instead of id or pk

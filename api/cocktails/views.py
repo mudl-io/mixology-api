@@ -15,20 +15,27 @@ from custom_user.models import CustomUser
 
 class CocktailsPaginator(PageNumberPagination):
     page_size = 30
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
     max_page_size = 1000
 
     # return extra data: "user_cocktails_count" and "platform_cocktails_count"
     # used on frontend to determine if should make subsequent request when infinite scrolling is active
-    def get_paginated_filtered_response(self, data, user_created_count, platform_created_count):
-        return Response(OrderedDict([
-            ('count', self.page.paginator.count),
-            ('next', self.get_next_link()),
-            ('previous', self.get_previous_link()),
-            ('results', data),
-            ('user_cocktails_count', user_created_count),
-            ('platform_cocktails_count', platform_created_count),
-        ]))
+    def get_paginated_filtered_response(
+        self, data, user_created_count, platform_created_count
+    ):
+        return Response(
+            OrderedDict(
+                [
+                    ("count", self.page.paginator.count),
+                    ("next", self.get_next_link()),
+                    ("previous", self.get_previous_link()),
+                    ("results", data),
+                    ("user_cocktails_count", user_created_count),
+                    ("platform_cocktails_count", platform_created_count),
+                ]
+            )
+        )
+
 
 class CocktailsViewSet(viewsets.ModelViewSet):
     serializer_class = CocktailSerializer
@@ -47,7 +54,11 @@ class CocktailsViewSet(viewsets.ModelViewSet):
         )
 
         headers = self.get_success_headers(serializer.data)
-        return Response(new_cocktail_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(
+            new_cocktail_serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers,
+        )
 
     def perform_create(self, serializer):
         cocktail = serializer.save()
@@ -85,33 +96,48 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
     @action(methods=["get"], detail=False)
     def saved_cocktails(self, request):
-        saved_cocktails = request.user.saved_cocktails.all()
-        serializer = CocktailSerializer(
-            saved_cocktails, context={"request": request}, many=True
+        paginator = CocktailsPaginator()
+        saved_cocktails = request.user.saved_cocktails.all().order_by("name")
+
+        page = paginator.paginate_queryset(
+            request=self.request, queryset=saved_cocktails
         )
 
-        if serializer.data:
-            return Response(serializer.data)
+        if page is not None:
+            serializer = CocktailSerializer(
+                page, context={"request": request}, many=True
+            )
+
+            if serializer.data:
+                return paginator.get_paginated_response(data=serializer.data)
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     @action(methods=["get"], detail=False)
     def created_cocktails(self, request):
+        paginator = CocktailsPaginator()
+
         created_cocktails = None
+        page = None
 
         if "username" in request.query_params:
             user = CustomUser.objects.get(username=request.query_params["username"])
             created_cocktails = user.created_cocktails.filter(is_private=False)
         else:
-            created_cocktails = request.user.created_cocktails.all()
-        
-        
-        serializer = CocktailSerializer(
-            created_cocktails, context={"request": request}, many=True
-        )
+            created_cocktails = request.user.created_cocktails.all().order_by("name")
+            page = paginator.paginate_queryset(
+                request=self.request, queryset=created_cocktails
+            )
+
+        data = page or created_cocktails
+
+        serializer = CocktailSerializer(data, context={"request": request}, many=True)
 
         if serializer.data:
-            return Response(serializer.data)
+            if page is not None:
+                return paginator.get_paginated_response(data=serializer.data)
+            else:
+                return Response(serializer.data)
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -119,13 +145,23 @@ class CocktailsViewSet(viewsets.ModelViewSet):
     def filtered_cocktails(self, request):
         paginator = CocktailsPaginator()
 
-        liquors_filter = json.loads(request.query_params["liquors_filter"]) if "liquors_filter" in request.query_params else None
-        ingredients_filter = json.loads(request.query_params["ingredients_filter"]) if  "ingredients_filter" in request.query_params else None
+        liquors_filter = (
+            json.loads(request.query_params["liquors_filter"])
+            if "liquors_filter" in request.query_params
+            else None
+        )
+        ingredients_filter = (
+            json.loads(request.query_params["ingredients_filter"])
+            if "ingredients_filter" in request.query_params
+            else None
+        )
 
-        cocktails = self.get_non_exact_matches(liquors_filter, ingredients_filter).order_by("name")
+        cocktails = self.get_non_exact_matches(
+            liquors_filter, ingredients_filter
+        ).order_by("name")
 
         user_created_count = cocktails.filter(created_by__isnull=False).count()
-        platform_created_count = cocktails.filter(created_by__isnull=True).count()
+        platform_created_count = cocktails.count() - user_created_count
 
         page = paginator.paginate_queryset(request=self.request, queryset=cocktails)
 
@@ -138,7 +174,7 @@ class CocktailsViewSet(viewsets.ModelViewSet):
                 return paginator.get_paginated_filtered_response(
                     data=serializer.data,
                     user_created_count=user_created_count,
-                    platform_created_count=platform_created_count
+                    platform_created_count=platform_created_count,
                 )
 
         return Response(status=status.HTTP_404_NOT_FOUND)

@@ -14,6 +14,13 @@ class ProfilePictureViewset(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = ProfilePicture.objects.all()
 
+        if "username" in self.request.data:
+            return (
+                queryset.filter(user=self.request.data["username"])
+                .order_by("created_at")
+                .reverse()
+            )
+
         if self.request.user and not self.request.user.is_anonymous:
             return (
                 queryset.filter(user=self.request.user).order_by("created_at").reverse()

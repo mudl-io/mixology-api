@@ -13,7 +13,7 @@ urlpatterns = [
     path("user/detail/", CustomUserGet.as_view(), name="get_user"),
     path(
         "token/obtain/", ObtainTokenPairWithUser.as_view(), name="token_create"
-    ),  # override sjwt stock token
+    ),
     path("token/refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"),
     path(
         "blacklist/",

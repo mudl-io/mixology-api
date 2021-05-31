@@ -68,7 +68,6 @@ class ObtainTokenPairWithUser(TokenObtainPairView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = CustomTokenObtainPairSerializer
 
-
 class LogoutAndBlacklistRefreshTokenForUserView(APIView):
     permission_classes = (permissions.AllowAny,)
     authentication_classes = ()

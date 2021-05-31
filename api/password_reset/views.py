@@ -42,7 +42,7 @@ class PasswordResetViewset(viewsets.ModelViewSet):
         if not active_reset:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
-        if active_reset.verification_code != code:
+        if active_reset.verification_code.lower() != code.lower():
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
         return Response(status=status.HTTP_200_OK)

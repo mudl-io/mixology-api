@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cocktails', '0021_auto_20210317_0321'),
+        ("cocktails", "0021_auto_20210317_0321"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ingredientamount',
-            name='unit',
-            field=models.CharField(default='oz', max_length=10, verbose_name='Unit'),
+            model_name="ingredientamount",
+            name="unit",
+            field=models.CharField(default="oz", max_length=10, verbose_name="Unit"),
         ),
         migrations.AddField(
-            model_name='liquoramount',
-            name='unit',
-            field=models.CharField(default='oz', max_length=10, verbose_name='Unit'),
+            model_name="liquoramount",
+            name="unit",
+            field=models.CharField(default="oz", max_length=10, verbose_name="Unit"),
         ),
     ]

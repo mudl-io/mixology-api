@@ -18,7 +18,9 @@ class CustomUserCreate(APIView):
 
         if not validations["is_valid"]:
             # return 207 so I can display the error to the user on the front end
-            return Response(validations["error_message"], status=status.HTTP_207_MULTI_STATUS)
+            return Response(
+                validations["error_message"], status=status.HTTP_207_MULTI_STATUS
+            )
 
         serializer = CustomUserSerializer(data=request.data)
         if serializer.is_valid():
@@ -29,8 +31,8 @@ class CustomUserCreate(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def validate_data(self, data):
-        user = data['username']
-        email = data['email']
+        user = data["username"]
+        email = data["email"]
 
         user_exists = CustomUser.objects.filter(username=user).count() > 0
 
@@ -40,23 +42,29 @@ class CustomUserCreate(APIView):
         email_exists = CustomUser.objects.filter(email=email).count()
 
         if email_exists:
-            return {"is_valid": False, "error_message": "Email address is already in use"}
+            return {
+                "is_valid": False,
+                "error_message": "Email address is already in use",
+            }
 
         return {"is_valid": True, "error_message": ""}
-        
+
+
 class CustomUserGet(APIView):
     permission_classes = ()
     authentication_classes = (JWTAuthentication,)
 
     # find user by username since usernames are unique identifierss
     def get(self, request, format="json"):
-        username = request.query_params['username']
+        username = request.query_params["username"]
 
         if not username:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         user = CustomUser.objects.get(username=username)
-        serializer = CustomUserSerializer(user, context={"request": request}, many=False)
+        serializer = CustomUserSerializer(
+            user, context={"request": request}, many=False
+        )
 
         if serializer.data:
             user_res = serializer.data
@@ -64,9 +72,11 @@ class CustomUserGet(APIView):
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+
 class ObtainTokenPairWithUser(TokenObtainPairView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = CustomTokenObtainPairSerializer
+
 
 class LogoutAndBlacklistRefreshTokenForUserView(APIView):
     permission_classes = (permissions.AllowAny,)

@@ -29,8 +29,12 @@ router = DefaultRouter()
 router.register(r"^api/cocktails", CocktailsViewSet, basename="cocktail")
 router.register(r"^api/ingredients", IngredientsViewSet, basename="ingredient")
 router.register(r"^api/liquors", LiquorsViewSet, basename="liquor")
-router.register(r"^api/cocktail_images", CocktailImagesViewSet, basename="cocktail_image")
-router.register(r"^api/profile_pictures", ProfilePictureViewset, basename="profile_picture")
+router.register(
+    r"^api/cocktail_images", CocktailImagesViewSet, basename="cocktail_image"
+)
+router.register(
+    r"^api/profile_pictures", ProfilePictureViewset, basename="profile_picture"
+)
 router.register(r"^api/password_reset", PasswordResetViewset, basename="password_reset")
 
 urlpatterns = [

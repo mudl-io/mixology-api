@@ -4,6 +4,7 @@ from .models import CustomUser
 
 from profile_pictures.serializers import ProfilePictureSerializer
 
+
 class CustomUserSerializer(serializers.ModelSerializer):
     """
     Currently unused in preference of the below.
@@ -16,8 +17,22 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ("id", "email", "username", "password", "saved_cocktails_count", "created_cocktails_count", "viewed_cocktails_count", "active_profile_picture")
-        read_only_fields = ("saved_cocktails_count", "created_cocktails_count", "viewed_cocktails_count", "active_profile_picture")
+        fields = (
+            "id",
+            "email",
+            "username",
+            "password",
+            "saved_cocktails_count",
+            "created_cocktails_count",
+            "viewed_cocktails_count",
+            "active_profile_picture",
+        )
+        read_only_fields = (
+            "saved_cocktails_count",
+            "created_cocktails_count",
+            "viewed_cocktails_count",
+            "active_profile_picture",
+        )
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):

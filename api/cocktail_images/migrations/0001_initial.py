@@ -10,19 +10,36 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('cocktails', '0024_remove_cocktail_image'),
+        ("cocktails", "0024_remove_cocktail_image"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CocktailImage',
+            name="CocktailImage",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('public_id', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('name', models.CharField(max_length=240, verbose_name='Name')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('image', models.ImageField(default='./defaultimg.png', upload_to='')),
-                ('cocktail', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cocktails.cocktail')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "public_id",
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                ("name", models.CharField(max_length=240, verbose_name="Name")),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("image", models.ImageField(default="./defaultimg.png", upload_to="")),
+                (
+                    "cocktail",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="cocktails.cocktail",
+                    ),
+                ),
             ],
         ),
     ]

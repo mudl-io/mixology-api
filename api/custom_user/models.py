@@ -11,7 +11,7 @@ class CustomUser(AbstractUser):
     @property
     def saved_cocktails_count(self):
         return self.saved_cocktails.count()
-    
+
     @property
     def created_cocktails_count(self):
         return self.created_cocktails.count()

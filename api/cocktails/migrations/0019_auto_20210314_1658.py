@@ -9,18 +9,28 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('cocktails', '0018_auto_20210313_1918'),
+        ("cocktails", "0018_auto_20210313_1918"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='cocktail',
-            name='created_by',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_cocktails', to=settings.AUTH_USER_MODEL),
+            model_name="cocktail",
+            name="created_by",
+            field=models.ForeignKey(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="created_cocktails",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='cocktail',
-            name='saved_by',
-            field=models.ManyToManyField(default=None, related_name='saved_cocktails', to=settings.AUTH_USER_MODEL),
+            model_name="cocktail",
+            name="saved_by",
+            field=models.ManyToManyField(
+                default=None,
+                related_name="saved_cocktails",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

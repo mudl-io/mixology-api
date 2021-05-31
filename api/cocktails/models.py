@@ -38,7 +38,7 @@ class Cocktail(models.Model):
     @property
     def times_saved(self):
         return self.saved_by.count()
-    
+
     @property
     def image(self):
         return self.cocktail_image.first()

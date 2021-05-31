@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('password_reset', '0001_initial'),
+        ("password_reset", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='passwordreset',
-            name='verification_code',
-            field=models.TextField(verbose_name='Description'),
+            model_name="passwordreset",
+            name="verification_code",
+            field=models.TextField(verbose_name="Description"),
         ),
     ]

@@ -181,27 +181,6 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @action(methods=["get"], detail=False)
-    def search(self, request):
-        search_value = request.query_params["search_value"]
-        cocktails = Cocktail.objects.filter(is_private=False)
-
-        search_cocktails = (
-            cocktails.annotate(similarity=TrigramSimilarity("name", search_value))
-            .filter(similarity__gt=0.01)
-            .order_by("-similarity")[:10]
-        )
-
-        if search_cocktails:
-            serializer = CocktailSerializer(
-                search_cocktails, context={"request": request}, many=True
-            )
-
-            if serializer.data:
-                return Response(serializer.data)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
     def get_custom_queryset(self, request):
         if not request.query_params:
             return self.filter_queryset(self.get_queryset())
@@ -221,6 +200,17 @@ class CocktailsViewSet(viewsets.ModelViewSet):
                 return user.created_cocktails.filter(is_private=False)
 
             return request.user.created_cocktails.all().order_by("name")
+        elif request.query_params["action"] == "search":
+            search_value = request.query_params["search_value"]
+            cocktails = Cocktail.objects.filter(is_private=False)
+
+            return (
+                cocktails.annotate(similarity=TrigramSimilarity("name", search_value))
+                .filter(similarity__gt=0.01)
+                .order_by("-similarity")[:10]
+            )
+        else:
+            raise Exception("not found")
 
     @staticmethod
     def get_exact_matches(liquor_ids, ingredient_ids):

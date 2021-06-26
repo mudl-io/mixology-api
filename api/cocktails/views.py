@@ -5,6 +5,7 @@ from rest_framework import status, permissions, viewsets
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count
+from django.contrib.postgres.search import TrigramSimilarity
 import json
 import random
 
@@ -221,6 +222,27 @@ class CocktailsViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=["get"], detail=False)
+    def search(self, request):
+        search_value = request.query_params["search_value"]
+        cocktails = Cocktail.objects.filter(is_private=False)
+
+        search_cocktails = (
+            cocktails.annotate(similarity=TrigramSimilarity("name", search_value))
+            .filter(similarity__gt=0.01)
+            .order_by("-similarity")[:10]
+        )
+
+        if search_cocktails:
+            serializer = CocktailSerializer(
+                search_cocktails, context={"request": request}, many=True
+            )
+
+            if serializer.data:
+                return Response(serializer.data)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @staticmethod
     def get_exact_matches(liquor_ids, ingredient_ids):

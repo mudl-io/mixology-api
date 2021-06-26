@@ -86,26 +86,14 @@ class CocktailsViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(methods=["post"], detail=False)
-    def save_cocktail(self, request):
+    @action(methods=["post"], detail=True)
+    def save_cocktail(self, request, public_id=None):
         try:
-            cocktail_id = request.data["public_id"]
-            cocktail = Cocktail.objects.get(public_id=cocktail_id)
+            cocktail = self.get_object()
 
             if request.user not in cocktail.saved_by.all():
                 cocktail.saved_by.add(request.user)
-
-            return Response(status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    @action(methods=["post"], detail=False)
-    def unsave_cocktail(self, request):
-        try:
-            cocktail_id = request.data["public_id"]
-            cocktail = Cocktail.objects.get(public_id=cocktail_id)
-
-            if request.user in cocktail.saved_by.all():
+            else:
                 cocktail.saved_by.remove(request.user)
 
             return Response(status=status.HTTP_200_OK)
@@ -150,9 +138,9 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @action(methods=["post"], detail=False)
-    def viewed_cocktail(self, request):
-        cocktail = Cocktail.objects.get(public_id=request.data["public_id"])
+    @action(methods=["post"], detail=True)
+    def viewed_cocktail(self, request, public_id=None):
+        cocktail = self.get_object()
 
         if request.user and not request.user.is_anonymous:
             cocktail.viewed_by.add(request.user)

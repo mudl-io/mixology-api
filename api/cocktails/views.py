@@ -75,8 +75,11 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
         try:
             queryset = self.get_custom_queryset(request)
-        except:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+        except Exception as e:
+            if str(e) == "not found":
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response(status=status.HTTP_403_FORBIDDEN)
 
         page = self.paginate_queryset(queryset)
         if page is not None:

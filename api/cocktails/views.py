@@ -198,9 +198,10 @@ class CocktailsViewSet(viewsets.ModelViewSet):
         elif request.query_params["action"] == "created_cocktails":
             if not request.user:
                 raise Exception("forbidden")
-            elif "username" in request.query_params:
+
+            if request.query_params["username"] != request.user.username:
                 user = CustomUser.objects.get(username=request.query_params["username"])
-                return user.created_cocktails.filter(is_private=False)
+                return user.created_cocktails.filter(is_private=False).order_by("name")
 
             return request.user.created_cocktails.all().order_by("name")
         elif request.query_params["action"] == "search":

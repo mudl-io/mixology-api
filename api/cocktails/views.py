@@ -113,34 +113,6 @@ class CocktailsViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=["get"], detail=False)
-    def created_cocktails(self, request):
-        paginator = CocktailsPaginator()
-
-        created_cocktails = None
-        page = None
-
-        if "username" in request.query_params:
-            user = CustomUser.objects.get(username=request.query_params["username"])
-            created_cocktails = user.created_cocktails.filter(is_private=False)
-        else:
-            created_cocktails = request.user.created_cocktails.all().order_by("name")
-            page = paginator.paginate_queryset(
-                request=self.request, queryset=created_cocktails
-            )
-
-        data = page or created_cocktails
-
-        serializer = CocktailSerializer(data, context={"request": request}, many=True)
-
-        if serializer.data:
-            if page is not None:
-                return paginator.get_paginated_response(data=serializer.data)
-            else:
-                return Response(serializer.data)
-
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    @action(methods=["get"], detail=False)
     def filtered_cocktails(self, request):
         paginator = CocktailsPaginator()
 
@@ -253,6 +225,14 @@ class CocktailsViewSet(viewsets.ModelViewSet):
                 raise Exception("forbidden")
 
             return request.user.saved_cocktails.all().order_by("name")
+        elif request.query_params["action"] == "created_cocktails":
+            if not request.user:
+                raise Exception("forbidden")
+            elif "username" in request.query_params:
+                user = CustomUser.objects.get(username=request.query_params["username"])
+                return user.created_cocktails.filter(is_private=False)
+
+            return request.user.created_cocktails.all().order_by("name")
 
     @staticmethod
     def get_exact_matches(liquor_ids, ingredient_ids):

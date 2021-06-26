@@ -44,6 +44,7 @@ class CocktailsViewSet(viewsets.ModelViewSet):
     lookup_field = "public_id"  # look up by public_id instead of id or pk
     authentication_classes = (JWTAuthentication,)
     permission_classes = (permissions.AllowAny,)
+    pagination_class = CocktailsPaginator
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -68,6 +69,22 @@ class CocktailsViewSet(viewsets.ModelViewSet):
         cocktail.save()
 
         return cocktail
+
+    def list(self, request, *args, **kwargs):
+        queryset = []
+
+        try:
+            queryset = self.get_custom_queryset(request)
+        except:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(methods=["post"], detail=False)
     def save_cocktail(self, request):
@@ -243,6 +260,18 @@ class CocktailsViewSet(viewsets.ModelViewSet):
                 return Response(serializer.data)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_custom_queryset(self, request):
+        if not request.query_params:
+            return self.filter_queryset(self.get_queryset())
+        elif request.query_params["action"] == "saved_cocktails":
+            if (
+                not request.user
+                or request.user.username != request.query_params["username"]
+            ):
+                raise Exception("forbidden")
+
+            return request.user.saved_cocktails.all().order_by("name")
 
     @staticmethod
     def get_exact_matches(liquor_ids, ingredient_ids):

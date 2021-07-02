@@ -1,13 +1,13 @@
 from typing import OrderedDict
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework import status, permissions, viewsets
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework import status, permissions
 from django.db.models import Count
 from django.contrib.postgres.search import TrigramSimilarity
 import json
 import random
 
+from api.views import JWTAuthViewset
 from api.pagination import DefaultPaginator
 from .models import Cocktail
 from .serializers import *
@@ -34,11 +34,9 @@ class CocktailsPaginator(DefaultPaginator):
         )
 
 
-class CocktailsViewSet(viewsets.ModelViewSet):
+class CocktailsViewSet(JWTAuthViewset):
     serializer_class = CocktailSerializer
     queryset = Cocktail.objects.all()
-    lookup_field = "public_id"  # look up by public_id instead of id or pk
-    authentication_classes = (JWTAuthentication,)
     permission_classes = (permissions.AllowAny,)
     pagination_class = CocktailsPaginator
 

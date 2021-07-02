@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import action
 
-from api.pagination import DefaultPaginator
+from api.views import JWTAuthViewset
 from .serializers import CustomUserSerializer, CustomTokenObtainPairSerializer
 from .models import CustomUser, Follower
 
@@ -75,13 +75,10 @@ class CustomUserGet(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-class CustomUsersViewset(viewsets.ModelViewSet):
+class CustomUsersViewset(JWTAuthViewset):
     serializer_class = CustomUserSerializer
     queryset = CustomUser.objects.all()
     lookup_field = "username"
-    authentication_classes = (JWTAuthentication,)
-    pagination_class = DefaultPaginator
-    # permission_classes = (permissions.AllowAny,)
 
     @action(methods=["get"], detail=True)
     def followers(self, request, username=None):

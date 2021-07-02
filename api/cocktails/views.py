@@ -3,22 +3,18 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status, permissions, viewsets
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.pagination import PageNumberPagination
 from django.db.models import Count
 from django.contrib.postgres.search import TrigramSimilarity
 import json
 import random
 
+from api.pagination import DefaultPaginator
 from .models import Cocktail
 from .serializers import *
 from custom_user.models import CustomUser
 
 
-class CocktailsPaginator(PageNumberPagination):
-    page_size = 30
-    page_size_query_param = "page_size"
-    max_page_size = 1000
-
+class CocktailsPaginator(DefaultPaginator):
     # return extra data: "user_cocktails_count" and "platform_cocktails_count"
     # used on frontend to determine if should make subsequent request when infinite scrolling is active
     def get_paginated_filtered_response(

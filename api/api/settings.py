@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "storages",
     "taggit",
     "rest_framework_simplejwt.token_blacklist",
+    "api",
     "cocktails",
     "ingredients",
     "liquors",

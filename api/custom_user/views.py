@@ -6,6 +6,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import action
 
+from api.pagination import DefaultPaginator
 from .serializers import CustomUserSerializer, CustomTokenObtainPairSerializer
 from .models import CustomUser, Follower
 
@@ -79,6 +80,7 @@ class CustomUsersViewset(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     lookup_field = "username"
     authentication_classes = (JWTAuthentication,)
+    pagination_class = DefaultPaginator
     # permission_classes = (permissions.AllowAny,)
 
     @action(methods=["get"], detail=True)
@@ -88,10 +90,16 @@ class CustomUsersViewset(viewsets.ModelViewSet):
         follower_ids = Follower.objects.filter(followee=user).values_list(
             "follower", flat=True
         )
-        following_users = CustomUser.objects.filter(id__in=follower_ids)
+        following_users = CustomUser.objects.filter(id__in=follower_ids).order_by(
+            "username"
+        )
+
+        page = self.paginate_queryset(following_users)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(following_users, many=True)
-
         return Response(serializer.data)
 
     # handles both following and unfollowing another user

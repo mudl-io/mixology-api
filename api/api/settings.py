@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "cocktail_images",
     "profile_pictures",
     "password_reset",
+    "posts",
 ]
 
 MIDDLEWARE = [

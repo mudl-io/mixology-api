@@ -44,6 +44,7 @@ class CocktailsViewSet(viewsets.ModelViewSet):
     lookup_field = "public_id"  # look up by public_id instead of id or pk
     authentication_classes = (JWTAuthentication,)
     permission_classes = (permissions.AllowAny,)
+    pagination_class = CocktailsPaginator
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -69,78 +70,38 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
         return cocktail
 
-    @action(methods=["post"], detail=False)
-    def save_cocktail(self, request):
+    def list(self, request, *args, **kwargs):
+        queryset = []
+
         try:
-            cocktail_id = request.data["public_id"]
-            cocktail = Cocktail.objects.get(public_id=cocktail_id)
+            queryset = self.get_custom_queryset(request)
+        except Exception as e:
+            if str(e) == "not found":
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(methods=["post"], detail=True)
+    def save_cocktail(self, request, public_id=None):
+        try:
+            cocktail = self.get_object()
 
             if request.user not in cocktail.saved_by.all():
                 cocktail.saved_by.add(request.user)
-
-            return Response(status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    @action(methods=["post"], detail=False)
-    def unsave_cocktail(self, request):
-        try:
-            cocktail_id = request.data["public_id"]
-            cocktail = Cocktail.objects.get(public_id=cocktail_id)
-
-            if request.user in cocktail.saved_by.all():
+            else:
                 cocktail.saved_by.remove(request.user)
 
             return Response(status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    @action(methods=["get"], detail=False)
-    def saved_cocktails(self, request):
-        paginator = CocktailsPaginator()
-        saved_cocktails = request.user.saved_cocktails.all().order_by("name")
-
-        page = paginator.paginate_queryset(
-            request=self.request, queryset=saved_cocktails
-        )
-
-        if page is not None:
-            serializer = CocktailSerializer(
-                page, context={"request": request}, many=True
-            )
-
-            if serializer.data:
-                return paginator.get_paginated_response(data=serializer.data)
-
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    @action(methods=["get"], detail=False)
-    def created_cocktails(self, request):
-        paginator = CocktailsPaginator()
-
-        created_cocktails = None
-        page = None
-
-        if "username" in request.query_params:
-            user = CustomUser.objects.get(username=request.query_params["username"])
-            created_cocktails = user.created_cocktails.filter(is_private=False)
-        else:
-            created_cocktails = request.user.created_cocktails.all().order_by("name")
-            page = paginator.paginate_queryset(
-                request=self.request, queryset=created_cocktails
-            )
-
-        data = page or created_cocktails
-
-        serializer = CocktailSerializer(data, context={"request": request}, many=True)
-
-        if serializer.data:
-            if page is not None:
-                return paginator.get_paginated_response(data=serializer.data)
-            else:
-                return Response(serializer.data)
-
-        return Response(status=status.HTTP_404_NOT_FOUND)
 
     @action(methods=["get"], detail=False)
     def filtered_cocktails(self, request):
@@ -180,9 +141,9 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @action(methods=["post"], detail=False)
-    def viewed_cocktail(self, request):
-        cocktail = Cocktail.objects.get(public_id=request.data["public_id"])
+    @action(methods=["post"], detail=True)
+    def viewed_cocktail(self, request, public_id=None):
+        cocktail = self.get_object()
 
         if request.user and not request.user.is_anonymous:
             cocktail.viewed_by.add(request.user)
@@ -223,26 +184,37 @@ class CocktailsViewSet(viewsets.ModelViewSet):
 
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @action(methods=["get"], detail=False)
-    def search(self, request):
-        search_value = request.query_params["search_value"]
-        cocktails = Cocktail.objects.filter(is_private=False)
+    def get_custom_queryset(self, request):
+        if not request.query_params:
+            return self.filter_queryset(self.get_queryset())
+        elif request.query_params["action"] == "saved_cocktails":
+            if (
+                not request.user
+                or request.user.username != request.query_params["username"]
+            ):
+                raise Exception("forbidden")
 
-        search_cocktails = (
-            cocktails.annotate(similarity=TrigramSimilarity("name", search_value))
-            .filter(similarity__gt=0.01)
-            .order_by("-similarity")[:10]
-        )
+            return request.user.saved_cocktails.all().order_by("name")
+        elif request.query_params["action"] == "created_cocktails":
+            if not request.user:
+                raise Exception("forbidden")
 
-        if search_cocktails:
-            serializer = CocktailSerializer(
-                search_cocktails, context={"request": request}, many=True
+            if request.query_params["username"] != request.user.username:
+                user = CustomUser.objects.get(username=request.query_params["username"])
+                return user.created_cocktails.filter(is_private=False).order_by("name")
+
+            return request.user.created_cocktails.all().order_by("name")
+        elif request.query_params["action"] == "search":
+            search_value = request.query_params["search_value"]
+            cocktails = Cocktail.objects.filter(is_private=False)
+
+            return (
+                cocktails.annotate(similarity=TrigramSimilarity("name", search_value))
+                .filter(similarity__gt=0.01)
+                .order_by("-similarity")[:10]
             )
-
-            if serializer.data:
-                return Response(serializer.data)
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            raise Exception("not found")
 
     @staticmethod
     def get_exact_matches(liquor_ids, ingredient_ids):

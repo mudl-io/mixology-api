@@ -1,14 +1,21 @@
 from django.urls import path
+from django.conf.urls import url, include
 from rest_framework_simplejwt import views as jwt_views
+from rest_framework.routers import DefaultRouter
 
 from .views import (
     CustomUserCreate,
     CustomUserGet,
+    CustomUsersViewset,
     LogoutAndBlacklistRefreshTokenForUserView,
     ObtainTokenPairWithUser,
 )
 
+router = DefaultRouter()
+router.register(r"^users", CustomUsersViewset, basename="cocktail")
+
 urlpatterns = [
+    url(r"^", include(router.urls)),
     path("user/create/", CustomUserCreate.as_view(), name="create_user"),
     path("user/detail/", CustomUserGet.as_view(), name="get_user"),
     path("token/obtain/", ObtainTokenPairWithUser.as_view(), name="token_create"),

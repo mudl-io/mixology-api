@@ -1,12 +1,13 @@
-from rest_framework import status, permissions
+from rest_framework import status, permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.decorators import action
 
 from .serializers import CustomUserSerializer, CustomTokenObtainPairSerializer
-from .models import CustomUser
+from .models import CustomUser, Follower
 
 
 class CustomUserCreate(APIView):
@@ -54,7 +55,7 @@ class CustomUserGet(APIView):
     permission_classes = ()
     authentication_classes = (JWTAuthentication,)
 
-    # find user by username since usernames are unique identifierss
+    # find user by username since usernames are unique identifiers
     def get(self, request, format="json"):
         username = request.query_params["username"]
 
@@ -71,6 +72,45 @@ class CustomUserGet(APIView):
             return Response(user_res, status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class CustomUsersViewset(viewsets.ModelViewSet):
+    serializer_class = CustomUserSerializer
+    queryset = CustomUser.objects.all()
+    lookup_field = "username"
+    authentication_classes = (JWTAuthentication,)
+    # permission_classes = (permissions.AllowAny,)
+
+    @action(methods=["get"], detail=True)
+    def followers(self, request, username=None):
+        user = self.get_object()
+
+        follower_ids = Follower.objects.filter(followee=user).values_list(
+            "follower", flat=True
+        )
+        following_users = CustomUser.objects.filter(id__in=follower_ids)
+
+        serializer = self.get_serializer(following_users, many=True)
+
+        return Response(serializer.data)
+
+    # handles both following and unfollowing another user
+    @action(methods=["post"], detail=True)
+    def follow(self, request, username=None):
+        if request.user.is_anonymous:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        followee = self.get_object()
+        follower = self.request.user
+
+        follow_record = Follower.objects.filter(followee=followee, follower=follower)
+
+        if follow_record.exists():
+            follow_record.delete()
+        else:
+            Follower.objects.create(followee=followee, follower=follower)
+
+        return Response(status=status.HTTP_200_OK)
 
 
 class ObtainTokenPairWithUser(TokenObtainPairView):

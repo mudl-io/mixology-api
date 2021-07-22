@@ -99,6 +99,25 @@ class CustomUsersViewset(JWTAuthViewset):
         serializer = self.get_serializer(following_users, many=True)
         return Response(serializer.data)
 
+    @action(methods=["get"], detail=True)
+    def following(self, request, username=None):
+        user = self.get_object()
+
+        followee_ids = Follower.objects.filter(follower=user).values_list(
+            "followee", flat=True
+        )
+        followed_users = CustomUser.objects.filter(id__in=followee_ids).order_by(
+            "username"
+        )
+
+        page = self.paginate_queryset(followed_users)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(followed_users, many=True)
+        return Response(serializer.data)
+
     # handles both following and unfollowing another user
     @action(methods=["post"], detail=True)
     def follow(self, request, username=None):

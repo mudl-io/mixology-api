@@ -9,7 +9,7 @@ class Post(models.Model):
     public_id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, unique=True, editable=False
     )
-    title = models.TextField("Name", max_length=50)
+    title = models.TextField("Name", max_length=50, blank=True, null=True)
     description = models.TextField("Description", null=True, blank=True, max_length=240)
     created_at = models.DateTimeField(auto_now_add=True)
     posted_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

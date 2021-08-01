@@ -3,14 +3,13 @@ from rest_framework import serializers
 from .models import Post
 from cocktails.models import Cocktail
 from cocktails.serializers import CocktailSerializer
-from custom_user.models import CustomUser
 from custom_user.serializers import CustomUserSerializer
 
 
 class PostSerializer(serializers.ModelSerializer):
     posted_by = CustomUserSerializer(many=False, read_only=True)
     cocktail = CocktailSerializer(many=False, read_only=True)
-    cocktail_id = serializers.UUIDField(write_only=True)
+    cocktail_id = serializers.UUIDField(write_only=True, allow_null=True)
 
     class Meta:
         model = Post
@@ -28,9 +27,12 @@ class PostSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        cocktail_id = Cocktail.objects.get(
-            public_id=str(validated_data.pop("cocktail_id"))
-        ).id
+        cocktail_id = None
+        cocktail_public_id = validated_data.pop("cocktail_id")
+
+        if cocktail_public_id:
+            cocktail_id = Cocktail.objects.get(public_id=str(cocktail_public_id)).id
+
         validated_data["cocktail_id"] = cocktail_id
         validated_data["posted_by_id"] = self.context["request"].user.id
 

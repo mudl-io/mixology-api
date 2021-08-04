@@ -202,6 +202,11 @@ class CocktailsViewSet(JWTAuthViewset):
             search_value = request.query_params["search_value"]
             cocktails = Cocktail.objects.filter(is_private=False)
 
+            if "username" in request.query_params:
+                cocktails = cocktails.filter(
+                    created_by__username=request.query_params["username"]
+                )
+
             return (
                 cocktails.annotate(similarity=TrigramSimilarity("name", search_value))
                 .filter(similarity__gt=0.01)

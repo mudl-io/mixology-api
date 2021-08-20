@@ -5,6 +5,8 @@ import uuid
 
 
 class CustomUser(AbstractUser):
+    profile_description = models.CharField(null=True, max_length=500)
+
     def __str__(self):
         return self.username
 
@@ -23,6 +25,14 @@ class CustomUser(AbstractUser):
     @property
     def active_profile_picture(self):
         return self.profile_picture.get(is_active=True)
+
+    @property
+    def followers_count(self):
+        return self.followee.count()
+
+    @property
+    def following_count(self):
+        return self.follower.count()
 
 
 class Follower(models.Model):

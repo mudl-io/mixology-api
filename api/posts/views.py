@@ -1,7 +1,7 @@
 from api.views import JWTAuthViewset
 from .serializers import PostSerializer
 from .models import Post
-from custom_user.models import Follower
+from custom_user.models import CustomUser, Follower
 
 
 class PostsViewset(JWTAuthViewset):
@@ -14,7 +14,15 @@ class PostsViewset(JWTAuthViewset):
 
         posts = []
 
-        if "username" in self.request.query_params:
+        if (
+            "default" in self.request.query_params
+            and self.request.query_params["default"] == "true"
+        ):
+            excluded_user_ids = [x for x in self.request.user.following] + [
+                self.request.user.id
+            ]
+            posts = Post.objects.exclude(posted_by__id__in=excluded_user_ids)
+        elif "username" in self.request.query_params:
             posts = Post.objects.filter(
                 posted_by__username=self.request.query_params["username"]
             )

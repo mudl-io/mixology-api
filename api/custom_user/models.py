@@ -34,12 +34,19 @@ class CustomUser(AbstractUser):
     def following_count(self):
         return self.follower.count()
 
+    @property
+    def following(self):
+        return self.is_follower.all().values_list("followee", flat=True)
+
 
 class Follower(models.Model):
     public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     follower = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="follower"
+        CustomUser, on_delete=models.CASCADE, related_name="is_follower"
     )
     followee = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="followee"
+        CustomUser, on_delete=models.CASCADE, related_name="is_followee"
     )
+
+    class Meta:
+        unique_together = ("follower", "followee")

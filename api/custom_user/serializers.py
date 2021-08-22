@@ -60,14 +60,15 @@ class CustomUserSerializer(serializers.ModelSerializer):
     """
 
     def is_being_followed(self, requested_user):
-        requesting_user = self.context["request"].user
+        if "request" in self.context:
+            requesting_user = self.context["request"].user
 
-        if requesting_user.is_anonymous:
-            return False
+            if requesting_user.is_anonymous:
+                return False
 
-        return Follower.objects.filter(
-            follower=requesting_user, followee=requested_user
-        ).exists()
+            return Follower.objects.filter(
+                follower=requesting_user, followee=requested_user
+            ).exists()
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

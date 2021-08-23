@@ -2,11 +2,38 @@ from api.views import JWTAuthViewset
 from .serializers import PostSerializer
 from .models import Post
 from custom_user.models import CustomUser, Follower
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
 
 
 class PostsViewset(JWTAuthViewset):
     serializer_class = PostSerializer
     queryset = Post.objects.all()
+
+    @action(methods=["get"], detail=False)
+    def has_new_posts(self, request):
+        if "time" not in request.query_params:
+            return Response(
+                data={"has_new_posts": False},
+                status=status.HTTP_200_OK,
+            )
+
+        queryset = self.get_queryset()
+        time = request.query_params["time"]
+
+        new_posts = queryset.filter(created_at__gt=time)
+
+        if new_posts and len(new_posts) > 0:
+            return Response(
+                data={"has_new_posts": True},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                data={"has_new_posts": False},
+                status=status.HTTP_200_OK,
+            )
 
     def get_queryset(self):
         if not self.request.user or self.request.user.is_anonymous:

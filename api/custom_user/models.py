@@ -28,11 +28,11 @@ class CustomUser(AbstractUser):
 
     @property
     def followers_count(self):
-        return self.followee.count()
+        return self.is_followee.count()
 
     @property
     def following_count(self):
-        return self.follower.count()
+        return self.is_follower.count()
 
     @property
     def following(self):

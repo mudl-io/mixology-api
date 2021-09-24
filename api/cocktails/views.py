@@ -1,24 +1,20 @@
 from typing import OrderedDict
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework import status, permissions, viewsets
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.pagination import PageNumberPagination
+from rest_framework import status, permissions
 from django.db.models import Count
 from django.contrib.postgres.search import TrigramSimilarity
 import json
 import random
 
+from api.views import JWTAuthViewset
+from api.pagination import DefaultPaginator
 from .models import Cocktail
 from .serializers import *
 from custom_user.models import CustomUser
 
 
-class CocktailsPaginator(PageNumberPagination):
-    page_size = 30
-    page_size_query_param = "page_size"
-    max_page_size = 1000
-
+class CocktailsPaginator(DefaultPaginator):
     # return extra data: "user_cocktails_count" and "platform_cocktails_count"
     # used on frontend to determine if should make subsequent request when infinite scrolling is active
     def get_paginated_filtered_response(
@@ -38,11 +34,9 @@ class CocktailsPaginator(PageNumberPagination):
         )
 
 
-class CocktailsViewSet(viewsets.ModelViewSet):
+class CocktailsViewSet(JWTAuthViewset):
     serializer_class = CocktailSerializer
     queryset = Cocktail.objects.all()
-    lookup_field = "public_id"  # look up by public_id instead of id or pk
-    authentication_classes = (JWTAuthentication,)
     permission_classes = (permissions.AllowAny,)
     pagination_class = CocktailsPaginator
 
@@ -185,6 +179,18 @@ class CocktailsViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     def get_custom_queryset(self, request):
+        order_by_field = (
+            request.query_params["order_by"]
+            if "order_by" in request.query_params
+            else "name"
+        )
+
+        limit = (
+            int(request.query_params["limit"])
+            if "limit" in request.query_params
+            else None
+        )
+
         if not request.query_params:
             return self.filter_queryset(self.get_queryset())
         elif request.query_params["action"] == "saved_cocktails":
@@ -194,24 +200,38 @@ class CocktailsViewSet(viewsets.ModelViewSet):
             ):
                 raise Exception("forbidden")
 
-            return request.user.saved_cocktails.all().order_by("name")
+            return request.user.saved_cocktails.all().order_by(order_by_field)
         elif request.query_params["action"] == "created_cocktails":
             if not request.user:
                 raise Exception("forbidden")
 
             if request.query_params["username"] != request.user.username:
                 user = CustomUser.objects.get(username=request.query_params["username"])
-                return user.created_cocktails.filter(is_private=False).order_by("name")
+                return user.created_cocktails.filter(is_private=False).order_by(
+                    order_by_field
+                )
 
-            return request.user.created_cocktails.all().order_by("name")
+            return request.user.created_cocktails.all().order_by(order_by_field)
         elif request.query_params["action"] == "search":
             search_value = request.query_params["search_value"]
             cocktails = Cocktail.objects.filter(is_private=False)
+
+            if "username" in request.query_params:
+                cocktails = cocktails.filter(
+                    created_by__username=request.query_params["username"]
+                )
 
             return (
                 cocktails.annotate(similarity=TrigramSimilarity("name", search_value))
                 .filter(similarity__gt=0.01)
                 .order_by("-similarity")[:10]
+            )
+        elif request.query_params["action"] == "most_liked":
+            user = CustomUser.objects.get(username=request.query_params["username"])
+            return (
+                user.created_cocktails.all()
+                .annotate(times_savedd=Count("saved_by"))
+                .order_by("-times_savedd")[:limit]
             )
         else:
             raise Exception("not found")

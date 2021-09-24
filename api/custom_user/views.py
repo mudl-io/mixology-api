@@ -5,6 +5,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import action
+from django.db.models import Count
+
 
 from api.views import JWTAuthViewset
 from .serializers import CustomUserSerializer, CustomTokenObtainPairSerializer
@@ -77,8 +79,25 @@ class CustomUserGet(APIView):
 
 class CustomUsersViewset(JWTAuthViewset):
     serializer_class = CustomUserSerializer
-    queryset = CustomUser.objects.all()
     lookup_field = "username"
+
+    def get_queryset(self):
+        if "suggested" in self.request.query_params:
+            currently_following_ids = [_id for _id in self.request.user.following] + [
+                self.request.user.id
+            ]
+
+            sorted_queryset = (
+                CustomUser.objects.all()
+                .annotate(follower_count=Count("is_followee"))
+                .order_by("follower_count")
+                .reverse()
+                .exclude(id__in=currently_following_ids)[:10]
+            )
+
+            return sorted_queryset
+
+        return CustomUser.objects.all()
 
     @action(methods=["get"], detail=True)
     def followers(self, request, username=None):

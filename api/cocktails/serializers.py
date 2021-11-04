@@ -19,7 +19,7 @@ class CocktailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cocktail
-        read_only_fields = ("image",)
+        read_only_fields = ("image", "is_default")
         fields = (
             "public_id",
             "name",
@@ -33,6 +33,7 @@ class CocktailSerializer(serializers.ModelSerializer):
             "is_private",
             "is_saved",
             "times_saved",
+            "is_default",
         )
 
     # only called when running "serializer.save() in view"

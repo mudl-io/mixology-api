@@ -12,6 +12,7 @@ class IngredientsViewSet(viewsets.ModelViewSet):
         ingredient = serializer.save()
 
         ingredient.created_by = self.request.user
+        ingredient.is_default = self.request.user.is_admin
         ingredient.save()
 
     # perform logical OR to get all elements that are either created by default or are created by the requesting user

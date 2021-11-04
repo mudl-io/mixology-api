@@ -12,6 +12,7 @@ class LiquorsViewSet(viewsets.ModelViewSet):
         liquor = serializer.save()
 
         liquor.created_by = self.request.user
+        liquor.is_default = self.request.user.is_admin
         liquor.save()
 
     # perform logical OR to get all elements that are either created by default or are created by the requesting user

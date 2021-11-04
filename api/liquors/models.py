@@ -16,6 +16,7 @@ class Liquor(models.Model):
         blank=True,
         related_name="created_liquors",
     )
+    is_default = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

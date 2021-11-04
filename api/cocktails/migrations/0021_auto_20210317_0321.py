@@ -8,32 +8,87 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('liquors', '0005_auto_20210303_0123'),
-        ('ingredients', '0005_auto_20210303_0123'),
-        ('cocktails', '0020_cocktail_viewed_by'),
+        ("liquors", "0005_auto_20210303_0123"),
+        ("ingredients", "0005_auto_20210303_0123"),
+        ("cocktails", "0020_cocktail_viewed_by"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='cocktail',
-            name='amt_saved',
+            model_name="cocktail",
+            name="amt_saved",
         ),
         migrations.CreateModel(
-            name='LiquorAmount',
+            name="LiquorAmount",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.FloatField(validators=[django.core.validators.MinValueValidator(0.0), django.core.validators.MaxValueValidator(10)])),
-                ('cocktail', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cocktails.cocktail')),
-                ('liquor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='liquors.liquor')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "amount",
+                    models.FloatField(
+                        validators=[
+                            django.core.validators.MinValueValidator(0.0),
+                            django.core.validators.MaxValueValidator(10),
+                        ]
+                    ),
+                ),
+                (
+                    "cocktail",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="cocktails.cocktail",
+                    ),
+                ),
+                (
+                    "liquor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="liquors.liquor"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='IngredientAmount',
+            name="IngredientAmount",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.FloatField(validators=[django.core.validators.MinValueValidator(0.0), django.core.validators.MaxValueValidator(10)])),
-                ('cocktail', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='cocktails.cocktail')),
-                ('ingredient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ingredients.ingredient')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "amount",
+                    models.FloatField(
+                        validators=[
+                            django.core.validators.MinValueValidator(0.0),
+                            django.core.validators.MaxValueValidator(10),
+                        ]
+                    ),
+                ),
+                (
+                    "cocktail",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="cocktails.cocktail",
+                    ),
+                ),
+                (
+                    "ingredient",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="ingredients.ingredient",
+                    ),
+                ),
             ],
         ),
     ]

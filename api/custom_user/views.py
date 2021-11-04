@@ -4,9 +4,13 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.decorators import action
+from django.db.models import Count
 
+
+from api.views import JWTAuthViewset
 from .serializers import CustomUserSerializer, CustomTokenObtainPairSerializer
-from .models import CustomUser
+from .models import CustomUser, Follower
 
 
 class CustomUserCreate(APIView):
@@ -18,7 +22,9 @@ class CustomUserCreate(APIView):
 
         if not validations["is_valid"]:
             # return 207 so I can display the error to the user on the front end
-            return Response(validations["error_message"], status=status.HTTP_207_MULTI_STATUS)
+            return Response(
+                validations["error_message"], status=status.HTTP_207_MULTI_STATUS
+            )
 
         serializer = CustomUserSerializer(data=request.data)
         if serializer.is_valid():
@@ -29,8 +35,8 @@ class CustomUserCreate(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def validate_data(self, data):
-        user = data['username']
-        email = data['email']
+        user = data["username"]
+        email = data["email"]
 
         user_exists = CustomUser.objects.filter(username=user).count() > 0
 
@@ -40,29 +46,115 @@ class CustomUserCreate(APIView):
         email_exists = CustomUser.objects.filter(email=email).count()
 
         if email_exists:
-            return {"is_valid": False, "error_message": "Email address is already in use"}
+            return {
+                "is_valid": False,
+                "error_message": "Email address is already in use",
+            }
 
         return {"is_valid": True, "error_message": ""}
-        
+
+
 class CustomUserGet(APIView):
     permission_classes = ()
     authentication_classes = (JWTAuthentication,)
 
-    # find user by username since usernames are unique identifierss
+    # find user by username since usernames are unique identifiers
     def get(self, request, format="json"):
-        username = request.query_params['username']
+        username = request.query_params["username"]
 
         if not username:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         user = CustomUser.objects.get(username=username)
-        serializer = CustomUserSerializer(user, context={"request": request}, many=False)
+        serializer = CustomUserSerializer(
+            user, context={"request": request}, many=False
+        )
 
         if serializer.data:
             user_res = serializer.data
             return Response(user_res, status=status.HTTP_200_OK)
 
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class CustomUsersViewset(JWTAuthViewset):
+    serializer_class = CustomUserSerializer
+    lookup_field = "username"
+
+    def get_queryset(self):
+        if "suggested" in self.request.query_params:
+            currently_following_ids = [_id for _id in self.request.user.following] + [
+                self.request.user.id
+            ]
+
+            sorted_queryset = (
+                CustomUser.objects.all()
+                .annotate(follower_count=Count("is_followee"))
+                .order_by("follower_count")
+                .reverse()
+                .exclude(id__in=currently_following_ids)[:10]
+            )
+
+            return sorted_queryset
+
+        return CustomUser.objects.all()
+
+    @action(methods=["get"], detail=True)
+    def followers(self, request, username=None):
+        user = self.get_object()
+
+        follower_ids = Follower.objects.filter(followee=user).values_list(
+            "follower", flat=True
+        )
+        following_users = CustomUser.objects.filter(id__in=follower_ids).order_by(
+            "username"
+        )
+
+        page = self.paginate_queryset(following_users)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(following_users, many=True)
+        return Response(serializer.data)
+
+    @action(methods=["get"], detail=True)
+    def following(self, request, username=None):
+        user = self.get_object()
+
+        followee_ids = Follower.objects.filter(follower=user).values_list(
+            "followee", flat=True
+        )
+        followed_users = CustomUser.objects.filter(id__in=followee_ids).order_by(
+            "username"
+        )
+
+        page = self.paginate_queryset(followed_users)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(followed_users, many=True)
+        return Response(serializer.data)
+
+    # handles both following and unfollowing another user
+    @action(methods=["post"], detail=True)
+    def follow(self, request, username=None):
+        if request.user.is_anonymous:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        followee = self.get_object()
+        follower = self.request.user
+
+        follow_record = Follower.objects.filter(followee=followee, follower=follower)
+
+        if follow_record.exists():
+            follow_record.delete()
+        else:
+            Follower.objects.create(followee=followee, follower=follower)
+
+        return Response(status=status.HTTP_200_OK)
+
 
 class ObtainTokenPairWithUser(TokenObtainPairView):
     permission_classes = (permissions.AllowAny,)

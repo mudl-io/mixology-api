@@ -8,13 +8,17 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('cocktails', '0019_auto_20210314_1658'),
+        ("cocktails", "0019_auto_20210314_1658"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='cocktail',
-            name='viewed_by',
-            field=models.ManyToManyField(default=None, related_name='viewed_cocktails', to=settings.AUTH_USER_MODEL),
+            model_name="cocktail",
+            name="viewed_by",
+            field=models.ManyToManyField(
+                default=None,
+                related_name="viewed_cocktails",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

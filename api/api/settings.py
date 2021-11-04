@@ -52,11 +52,15 @@ INSTALLED_APPS = [
     "storages",
     "taggit",
     "rest_framework_simplejwt.token_blacklist",
+    "api",
     "cocktails",
     "ingredients",
     "liquors",
     "custom_user",
-    "cocktail_images"
+    "cocktail_images",
+    "profile_pictures",
+    "password_reset",
+    "posts",
 ]
 
 MIDDLEWARE = [
@@ -98,21 +102,22 @@ WSGI_APPLICATION = "api.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-# development database
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql_psycopg2",
-#         "NAME": "mixology",
-#         "USER": os.environ["POSTGRESQL_USER"],
-#         "PASSWORD": os.environ["POSTGRESQL_PW"],
-#         "HOST": "localhost",
-#         "PORT": "5432",
-#     }
-# }
-
-# remote db
-DATABASES = {}
-DATABASES['default'] = dj_database_url.config(conn_max_age=600)
+if "IS_LOCAL" in os.environ:
+    # development database
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            "NAME": "mixology",
+            "USER": os.environ["POSTGRESQL_USER"],
+            "PASSWORD": os.environ["POSTGRESQL_PW"],
+            "HOST": "localhost",
+            "PORT": "5432",
+        }
+    }
+else:
+    # remote db
+    DATABASES = {}
+    DATABASES["default"] = dj_database_url.config(conn_max_age=600)
 
 # Custom user model
 AUTH_USER_MODEL = "custom_user.CustomUser"
@@ -157,15 +162,17 @@ USE_TZ = True
 # MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'api/assets/static','api/assets/media')
 
 # AWS_LOCATION = 'static'
-AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
-AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
-AWS_STORAGE_BUCKET_NAME = 'mixology-app-cocktail-images'
-AWS_S3_REGION_NAME = 'us-east-1'
+AWS_ACCESS_KEY_ID = os.environ["AWS_ACCESS_KEY_ID"]
+AWS_SECRET_ACCESS_KEY = os.environ["AWS_SECRET_ACCESS_KEY"]
+AWS_STORAGE_BUCKET_NAME = "mixology-app-cocktail-images"
+AWS_S3_REGION_NAME = "us-east-1"
 # AWS_S3_CUSTOM_DOMAIN='%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 # AWS_S3_OBJECT_PARAMETERS = {
 #      'CacheControl': 'max-age=86400',
 # }
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage" #'app.storage_backends.MediaStorage'
+DEFAULT_FILE_STORAGE = (
+    "storages.backends.s3boto3.S3Boto3Storage"  #'app.storage_backends.MediaStorage'
+)
 # STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, "static"),
@@ -179,9 +186,9 @@ DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage" #'app.storage_
 # )
 # AWS_DEFAULT_ACL = None
 
-STATIC_URL = 'http://' + AWS_STORAGE_BUCKET_NAME + '.s3.amazonaws.com/'
+STATIC_URL = "http://" + AWS_STORAGE_BUCKET_NAME + ".s3.amazonaws.com/"
 # STATIC_ROOT = os.path.join(BASE_DIR, 'build', 'static')
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'build', 'media')
@@ -219,3 +226,10 @@ SIMPLE_JWT = {
 }
 
 django_heroku.settings(locals())
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "cocktail.app.dev@gmail.com"
+EMAIL_HOST_PASSWORD = "ibrbdiyqkcoverqm"

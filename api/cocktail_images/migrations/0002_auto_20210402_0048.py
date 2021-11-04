@@ -7,14 +7,18 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cocktails', '0024_remove_cocktail_image'),
-        ('cocktail_images', '0001_initial'),
+        ("cocktails", "0024_remove_cocktail_image"),
+        ("cocktail_images", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='cocktailimage',
-            name='cocktail',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='cocktail_image', to='cocktails.cocktail'),
+            model_name="cocktailimage",
+            name="cocktail",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="cocktail_image",
+                to="cocktails.cocktail",
+            ),
         ),
     ]

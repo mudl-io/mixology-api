@@ -1,14 +1,11 @@
-from rest_framework.response import Response
-from rest_framework.decorators import action
-from rest_framework import status, permissions, viewsets
-from rest_framework_simplejwt.authentication import JWTAuthentication
-import json
+from rest_framework import permissions
 
+from api.views import JWTAuthViewset
 from .models import CocktailImage
-from cocktails.models import Cocktail
 from .serializers import *
 
 
-class CocktailImagesViewSet(viewsets.ModelViewSet):
+class CocktailImagesViewSet(JWTAuthViewset):
     serializer_class = CocktailImageSerializer
     queryset = CocktailImage.objects.all()
+    permission_classes = (permissions.AllowAny,)

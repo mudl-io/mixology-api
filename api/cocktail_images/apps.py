@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class CocktailImageConfig(AppConfig):
-    name = 'cocktail_image'
+    name = "cocktail_image"

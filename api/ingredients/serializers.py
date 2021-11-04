@@ -7,7 +7,7 @@ from cocktails.models import IngredientAmount
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = ("public_id", "name", "description")
+        fields = ("public_id", "name", "description", "created_by")
         extra_kwargs = {
             "public_id": {"validators": []},
         }

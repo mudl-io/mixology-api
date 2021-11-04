@@ -6,6 +6,7 @@ import uuid
 
 class CustomUser(AbstractUser):
     profile_description = models.CharField(null=True, max_length=500)
+    is_admin = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username

@@ -60,6 +60,7 @@ class CocktailsViewSet(JWTAuthViewset):
         cocktail = serializer.save()
 
         cocktail.created_by = self.request.user
+        cocktail.is_default = self.request.user.is_admin
         cocktail.save()
 
         return cocktail
@@ -116,7 +117,7 @@ class CocktailsViewSet(JWTAuthViewset):
             liquors_filter, ingredients_filter
         ).order_by("name")
 
-        user_created_count = cocktails.filter(created_by__isnull=False).count()
+        user_created_count = cocktails.filter(is_default=False).count()
         platform_created_count = cocktails.count() - user_created_count
 
         page = paginator.paginate_queryset(request=self.request, queryset=cocktails)
@@ -247,7 +248,7 @@ class CocktailsViewSet(JWTAuthViewset):
             .filter(
                 is_private=False,
                 liquors__public_id__in=liquor_ids,
-                num_ingredients=len(liquor_ids),
+                num_liquors=len(liquor_ids),
             )
             .filter(
                 ingredients__public_id__in=ingredient_ids,

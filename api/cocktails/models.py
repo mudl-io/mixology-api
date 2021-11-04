@@ -34,6 +34,7 @@ class Cocktail(models.Model):
     viewed_by = models.ManyToManyField(
         CustomUser, default=None, related_name="viewed_cocktails"
     )
+    is_default = models.BooleanField(default=False)
 
     @property
     def times_saved(self):

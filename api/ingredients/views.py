@@ -18,6 +18,6 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     # perform logical OR to get all elements that are either created by default or are created by the requesting user
     def get_queryset(self):
         queryset = Ingredient.objects.filter(
-            Q(created_by__isnull=True) | Q(created_by=self.request.user)
+            Q(is_default=True) | Q(created_by=self.request.user)
         )
         return queryset

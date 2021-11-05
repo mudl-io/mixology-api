@@ -7,7 +7,8 @@ from cocktails.models import LiquorAmount
 class LiquorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Liquor
-        fields = ("public_id", "name", "description", "created_by")
+        read_only_fields = ("is_default",)
+        fields = ("public_id", "name", "description", "created_by", "is_default")
         extra_kwargs = {
             "public_id": {"validators": []},
         }
